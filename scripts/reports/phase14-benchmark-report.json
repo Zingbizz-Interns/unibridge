@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-04-10T09:04:28.080Z",
+  "baseUrl": "http://127.0.0.1:3000",
+  "iterations": 20,
+  "results": [
+    {
+      "path": "/api/colleges?page=1&limit=20",
+      "iterations": 20,
+      "p50": 204.43,
+      "p95": 266.08,
+      "max": 950.79
+    },
+    {
+      "path": "/api/colleges?page=1&limit=20&category=engineering",
+      "iterations": 20,
+      "p50": 205.18,
+      "p95": 285.83,
+      "max": 306.58
+    },
+    {
+      "path": "/api/colleges?page=1&limit=20&state=Tamil%20Nadu&courseLevel=ug&sort=nirf_asc",
+      "iterations": 20,
+      "p50": 205.01,
+      "p95": 309.94,
+      "max": 407.56
+    },
+    {
+      "path": "/api/colleges?page=1&limit=20&stream=Computer%20Science&feeMax=200000&sort=fee_low",
+      "iterations": 20,
+      "p50": 205.44,
+      "p95": 265.06,
+      "max": 268.64
+    }
+  ]
+}

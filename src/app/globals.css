@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  /* Material You (MD3) Design Tokens */
+  --color-md-surface: #FFFBFE;
+  --color-md-on-surface: #1C1B1F;
+  --color-md-primary: #6750A4;
+  --color-md-on-primary: #FFFFFF;
+  --color-md-secondary-container: #E8DEF8;
+  --color-md-on-secondary-container: #1D192B;
+  --color-md-tertiary: #7D5260;
+  --color-md-surface-container: #F3EDF7;
+  --color-md-surface-container-high: #ECE6F0;
+  --color-md-surface-container-low: #E7E0EC;
+  --color-md-surface-variant: #E7E0EC;
+  --color-md-outline: #79747E;
+  --color-md-border: #79747E;
+  --color-md-on-surface-variant: #49454F;
+
+  --ease-md: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@layer base {
+  body {
+    @apply bg-md-surface text-md-on-surface antialiased transition-colors duration-300 relative overflow-x-hidden min-h-screen selection:bg-md-primary/20 selection:text-md-primary;
+    padding-bottom: var(--compare-bar-offset, 0px);
+  }
+}
+
+/* Base focus styles for accessibility according to MD3 */
+@layer utilities {
+  .md-focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-md-primary focus-visible:ring-offset-2 focus-visible:ring-offset-md-surface;
+  }
+
+  /* Hide scrollbar cross-browser */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Dropdown scale-in animation */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.scale-in {
+  animation: scale-in 0.15s cubic-bezier(0.2, 0, 0, 1);
+}

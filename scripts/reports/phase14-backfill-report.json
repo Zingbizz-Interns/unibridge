@@ -1,0 +1,81 @@
+{
+  "generatedAt": "2026-04-10T09:03:10.194Z",
+  "updates": {
+    "updatedCourseLevels": 0,
+    "updatedStreams": 0,
+    "updatedCategories": 0,
+    "updatedCollegeTypes": 0
+  },
+  "before": {
+    "colleges": {
+      "total": 4,
+      "missing_category": 0,
+      "missing_college_type": 0
+    },
+    "courses": {
+      "total": 2,
+      "missing_course_level": 0,
+      "missing_stream": 0
+    },
+    "distributions": {
+      "category": [
+        {
+          "value": "arts_science",
+          "count": 2
+        },
+        {
+          "value": "engineering",
+          "count": 2
+        }
+      ],
+      "collegeType": [
+        {
+          "value": "affiliated",
+          "count": 4
+        }
+      ],
+      "courseLevel": [
+        {
+          "value": "ug",
+          "count": 2
+        }
+      ]
+    }
+  },
+  "after": {
+    "colleges": {
+      "total": 4,
+      "missing_category": 0,
+      "missing_college_type": 0
+    },
+    "courses": {
+      "total": 2,
+      "missing_course_level": 0,
+      "missing_stream": 0
+    },
+    "distributions": {
+      "category": [
+        {
+          "value": "arts_science",
+          "count": 2
+        },
+        {
+          "value": "engineering",
+          "count": 2
+        }
+      ],
+      "collegeType": [
+        {
+          "value": "affiliated",
+          "count": 4
+        }
+      ],
+      "courseLevel": [
+        {
+          "value": "ug",
+          "count": 2
+        }
+      ]
+    }
+  }
+}
