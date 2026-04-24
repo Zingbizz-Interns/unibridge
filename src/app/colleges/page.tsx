@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 import { INDIAN_STATES } from '@/validators/college-profile'
 import { CollegeCard } from './_components/CollegeCard'
 import { FilterSelect } from './_components/FilterSelect'
+import { Top10Table } from './_components/Top10Table'
 
 export const dynamic = 'force-dynamic'
 
@@ -252,6 +253,9 @@ export default async function CollegesPage({ searchParams }: { searchParams: Pro
 
   const hasMore = rows.length > limit
   const visibleResults = hasMore ? rows.slice(0, limit) : rows
+  const isTop10Mode = streams.length > 0
+  const top10Rows = isTop10Mode ? rows.slice(0, 10) : []
+  const activeStreamLabel = streams[0] ?? ''
   const totalCount = Number(totalRows[0]?.total ?? 0)
 
   const degreeFacets = asFacets(degreeRows)
@@ -700,7 +704,29 @@ export default async function CollegesPage({ searchParams }: { searchParams: Pro
 
           {/* Results */}
           <h2 className="sr-only">College Results</h2>
-          {visibleResults.length === 0 ? (
+          {isTop10Mode ? (
+            top10Rows.length === 0 ? (
+              <div className="animate-fade-in rounded-3xl bg-md-surface-container p-14 text-center shadow-sm">
+                <h3 className="text-xl font-medium text-md-on-surface">No colleges found</h3>
+                <p className="mt-2 text-md-on-surface-variant">
+                  Try adjusting your filters or search query.
+                </p>
+                <Link
+                  href="/colleges"
+                  className="mt-6 inline-flex h-10 items-center rounded-full bg-md-primary px-6 text-sm font-medium text-white transition-all duration-200 hover:bg-md-primary/90 active:scale-95"
+                >
+                  Clear all filters
+                </Link>
+              </div>
+            ) : (
+              <Top10Table
+                key={activeStreamLabel}
+                colleges={top10Rows}
+                streamName={activeStreamLabel}
+                viewAllHref={buildPageHref(1, { ...filters, stream: [] })}
+              />
+            )
+          ) : visibleResults.length === 0 ? (
             <div className="rounded-3xl bg-md-surface-container p-14 text-center shadow-sm">
               <h3 className="text-xl font-medium text-md-on-surface">No colleges found</h3>
               <p className="mt-2 text-md-on-surface-variant">
@@ -726,8 +752,8 @@ export default async function CollegesPage({ searchParams }: { searchParams: Pro
             </div>
           )}
 
-          {/* Pagination */}
-          {visibleResults.length > 0 && (
+          {/* Pagination — card grid mode only */}
+          {!isTop10Mode && visibleResults.length > 0 && (
             <div className="mt-10 flex items-center justify-center gap-2">
               <Link
                 href={buildPageHref(Math.max(1, page - 1), filters)}
