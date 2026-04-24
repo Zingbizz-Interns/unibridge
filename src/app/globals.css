@@ -58,3 +58,77 @@
 .scale-in {
   animation: scale-in 0.15s cubic-bezier(0.2, 0, 0, 1);
 }
+
+/* Onboarding wizard step transition */
+@keyframes step-enter {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-step-enter {
+  animation: step-enter 0.35s cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+/* Input focus glow */
+.md-input-glow:focus {
+  box-shadow: 0 0 0 4px rgba(103, 80, 164, 0.12);
+}
+
+/* Page-level enter animation */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-enter {
+  animation: page-enter 0.4s cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+/* Staggered children — applied to a grid/flex wrapper */
+.animate-stagger > * {
+  animation: page-enter 0.4s cubic-bezier(0.2, 0, 0, 1) both;
+}
+.animate-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.animate-stagger > *:nth-child(2) { animation-delay: 55ms; }
+.animate-stagger > *:nth-child(3) { animation-delay: 110ms; }
+.animate-stagger > *:nth-child(4) { animation-delay: 165ms; }
+.animate-stagger > *:nth-child(5) { animation-delay: 220ms; }
+.animate-stagger > *:nth-child(6) { animation-delay: 275ms; }
+.animate-stagger > *:nth-child(7) { animation-delay: 330ms; }
+.animate-stagger > *:nth-child(8) { animation-delay: 385ms; }
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.35s ease both;
+}
