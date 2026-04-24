@@ -210,7 +210,7 @@ const demoColleges: Array<{
     ],
   },
   {
-    name: 'PGIMER Chandigarh', city: 'Chandigarh', state: 'Punjab', nirfRank: 2,
+    name: 'PGIMER Chandigarh', city: 'Chandigarh', state: 'Chandigarh', nirfRank: 2,
     category: 'medical', collegeType: 'university', medicalCutoff: 99.80,
     courses: [
       { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 55000 },

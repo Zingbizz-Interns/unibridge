@@ -54,7 +54,7 @@ export function Top10Table({ colleges, streamName, viewAllHref }: Props) {
       <div className="mb-5 flex items-center justify-between animate-fade-in">
         <div className="inline-flex items-center gap-2 rounded-full bg-md-secondary-container px-4 py-1.5">
           <span className="text-sm font-medium text-md-on-secondary-container">
-            {streamName} — Top 10 Colleges
+            {streamName} — Top {colleges.length} Colleges
           </span>
         </div>
         <Link

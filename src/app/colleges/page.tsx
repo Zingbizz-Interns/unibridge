@@ -58,6 +58,10 @@ const STREAM_CATEGORY_MAP: Partial<Record<string, (typeof categoryEnum.enumValue
   arts_science:         'arts_science',
 }
 
+const NAMED_GOAL_STREAMS = new Set([
+  'Engineering', 'Medical', 'Arts & Science', 'Management', 'Commerce', 'Law',
+])
+
 function readStringParam(params: SearchParams, key: string) {
   const rawValue = params[key]
   const value = Array.isArray(rawValue) ? rawValue[rawValue.length - 1] : rawValue
@@ -253,7 +257,8 @@ export default async function CollegesPage({ searchParams }: { searchParams: Pro
 
   const hasMore = rows.length > limit
   const visibleResults = hasMore ? rows.slice(0, limit) : rows
-  const isTop10Mode = streams.length > 0
+  const isTop10Mode =
+    page === 1 && streams.length > 0 && streams.every((s) => NAMED_GOAL_STREAMS.has(s))
   const top10Rows = isTop10Mode ? rows.slice(0, 10) : []
   const activeStreamLabel = streams[0] ?? ''
   const totalCount = Number(totalRows[0]?.total ?? 0)
@@ -723,7 +728,7 @@ export default async function CollegesPage({ searchParams }: { searchParams: Pro
                 key={activeStreamLabel}
                 colleges={top10Rows}
                 streamName={activeStreamLabel}
-                viewAllHref={buildPageHref(1, { ...filters, stream: [] })}
+                viewAllHref={buildPageHref(2, { ...filters })}
               />
             )
           ) : visibleResults.length === 0 ? (
