@@ -18,7 +18,7 @@ const goals: {
     courses: ['BE/B.Tech', 'ME/M.Tech', 'Diploma'],
     bg: 'bg-blue-50',
     iconColor: 'text-blue-600',
-    href: '/colleges?goal=engineering',
+    href: '/colleges?stream=Engineering',
   },
   {
     Icon: Briefcase,
@@ -27,7 +27,7 @@ const goals: {
     courses: ['MBA', 'BBA', 'PGDM'],
     bg: 'bg-violet-50',
     iconColor: 'text-violet-600',
-    href: '/colleges?goal=management',
+    href: '/colleges?stream=Management',
   },
   {
     Icon: BarChart2,
@@ -36,7 +36,7 @@ const goals: {
     courses: ['B.Com', 'M.Com', 'CA'],
     bg: 'bg-emerald-50',
     iconColor: 'text-emerald-600',
-    href: '/colleges?goal=commerce',
+    href: '/colleges?stream=Commerce',
   },
   {
     Icon: Palette,
@@ -45,7 +45,7 @@ const goals: {
     courses: ['BA', 'MA', 'BFA'],
     bg: 'bg-amber-50',
     iconColor: 'text-amber-600',
-    href: '/colleges?goal=arts',
+    href: '/colleges?stream=Arts+%26+Science',
   },
   {
     Icon: HeartPulse,
@@ -54,7 +54,7 @@ const goals: {
     courses: ['MBBS', 'BDS', 'BAMS'],
     bg: 'bg-rose-50',
     iconColor: 'text-rose-600',
-    href: '/colleges?goal=medical',
+    href: '/colleges?stream=Medical',
   },
   {
     Icon: Scale,
@@ -63,7 +63,7 @@ const goals: {
     courses: ['LLB', 'BA LLB', 'LLM'],
     bg: 'bg-indigo-50',
     iconColor: 'text-indigo-600',
-    href: '/colleges?goal=law',
+    href: '/colleges?stream=Law',
   },
 ]
 
