@@ -49,6 +49,14 @@ function normalizeCollegeType(rawValue: string | undefined) {
   return (collegeTypeEnum.enumValues as readonly string[]).includes(normalized) ? normalized : undefined
 }
 
+const STREAM_CATEGORY_MAP: Partial<Record<string, (typeof categoryEnum.enumValues)[number]>> = {
+  engineering:          'engineering',
+  medical:              'medical',
+  'arts & science':     'arts_science',
+  'arts and science':   'arts_science',
+  arts_science:         'arts_science',
+}
+
 function readStringParam(params: SearchParams, key: string) {
   const rawValue = params[key]
   const value = Array.isArray(rawValue) ? rawValue[rawValue.length - 1] : rawValue
@@ -110,6 +118,16 @@ export default async function CollegesPage({ searchParams }: { searchParams: Pro
   const state = readStringParam(params, 'state')
   const city = readStringParam(params, 'city')
   const streams = readArrayParam(params, 'stream')
+
+  const mappedStreamCategories = [
+    ...new Set(
+      streams
+        .map((s) => STREAM_CATEGORY_MAP[s.toLowerCase()])
+        .filter((v): v is (typeof categoryEnum.enumValues)[number] => v !== undefined),
+    ),
+  ]
+  const unmappedStreams = streams.filter((s) => !STREAM_CATEGORY_MAP[s.toLowerCase()])
+
   const collegeTypes = readArrayParam(params, 'collegeType').filter(
     (v) => (collegeTypeEnum.enumValues as readonly string[]).includes(v),
   ) as (typeof collegeTypeEnum.enumValues)[number][]
@@ -118,7 +136,7 @@ export default async function CollegesPage({ searchParams }: { searchParams: Pro
   const minNirf = readStringParam(params, 'minNirf')
   const maxNirf = readStringParam(params, 'maxNirf')
 
-  const defaultSort: SortOption = q ? 'relevance' : 'recent'
+  const defaultSort: SortOption = q ? 'relevance' : streams.length > 0 ? 'nirf_asc' : 'recent'
   const rawSort = readStringParam(params, 'sort')
   const sort: SortOption = rawSort && (SORT_OPTIONS as readonly string[]).includes(rawSort) ? (rawSort as SortOption) : defaultSort
   const isNonDefaultSort = sort !== defaultSort
@@ -138,8 +156,8 @@ export default async function CollegesPage({ searchParams }: { searchParams: Pro
   const buildCourseExists = ({ includeStream = true }: { includeStream?: boolean } = {}) => {
     const courseConditions: SQL[] = [eq(courses.collegeId, colleges.id)]
     if (courseLevels.length) courseConditions.push(inArray(courses.courseLevel, courseLevels))
-    if (includeStream && streams.length) {
-      const streamConds = streams.map((s) => {
+    if (includeStream && unmappedStreams.length) {
+      const streamConds = unmappedStreams.map((s) => {
         const q = `%${s}%`
         return sql<boolean>`(${courses.stream} ILIKE ${q} OR ${courses.name} ILIKE ${q} OR ${courses.degree} ILIKE ${q})`
       })
@@ -158,6 +176,12 @@ export default async function CollegesPage({ searchParams }: { searchParams: Pro
   if (collegeTypes.length) baseConditions.push(inArray(colleges.collegeType, collegeTypes))
   if (minNirfNumber !== undefined) baseConditions.push(gte(colleges.nirfRank, minNirfNumber))
   if (maxNirfNumber !== undefined) baseConditions.push(lte(colleges.nirfRank, maxNirfNumber))
+  if (mappedStreamCategories.length === 1) {
+    baseConditions.push(eq(colleges.category, mappedStreamCategories[0]))
+  } else if (mappedStreamCategories.length > 1) {
+    baseConditions.push(inArray(colleges.category, mappedStreamCategories))
+  }
+
   const courseFilter = buildCourseExists()
   if (courseFilter) baseConditions.push(courseFilter)
 
@@ -179,6 +203,8 @@ export default async function CollegesPage({ searchParams }: { searchParams: Pro
       category: colleges.category,
       collegeType: colleges.collegeType,
       type: colleges.type,
+      engineeringCutoff: colleges.engineeringCutoff,
+      medicalCutoff: colleges.medicalCutoff,
       minAnnualFee: minAnnualFeeExpression,
     })
     .from(colleges)
@@ -262,7 +288,7 @@ export default async function CollegesPage({ searchParams }: { searchParams: Pro
   collegeTypes.forEach((t) => selected.push({ label: titleize(t), href: buildPageHref(1, { ...filters, collegeType: collegeTypes.filter((x) => x !== t) }) }))
 
   return (
-    <div className="min-h-screen bg-[#FFFBFE]">
+    <div className="min-h-screen bg-[#FFFBFE] animate-page-enter">
       <Suspense fallback={null}>
         <DiscoveryAnalyticsTracker />
       </Suspense>
@@ -320,18 +346,24 @@ export default async function CollegesPage({ searchParams }: { searchParams: Pro
 
           {/* Quick-filter chips */}
           <div className="mt-5 flex flex-wrap justify-center gap-2">
-            {(['engineering', 'medical', 'arts_science'] as const).map((cat) => (
+            {(['Engineering', 'Medical', 'Arts & Science'] as const).map((streamName) => (
               <Link
-                key={cat}
-                href={buildPageHref(1, { ...filters, category: category === cat ? undefined : cat })}
+                key={streamName}
+                href={buildPageHref(1, {
+                  ...filters,
+                  stream: streams.includes(streamName)
+                    ? streams.filter((s) => s !== streamName)
+                    : [streamName],
+                  category: undefined,
+                })}
                 className={cn(
                   'rounded-full border px-4 py-1.5 text-sm transition-colors duration-200',
-                  category === cat
+                  streams.includes(streamName)
                     ? 'border-transparent bg-md-secondary-container text-md-on-secondary-container'
                     : 'border-md-outline/40 text-md-on-surface-variant hover:bg-md-primary/10',
                 )}
               >
-                {cat === 'arts_science' ? 'Arts & Science' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+                {streamName}
               </Link>
             ))}
             {(['Maharashtra', 'Tamil Nadu', 'Karnataka'] as const).map((st) => (
