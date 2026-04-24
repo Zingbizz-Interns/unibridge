@@ -8,13 +8,21 @@
  * Requires DATABASE_URL in your .env.local (loaded via dotenv).
  */
 
-import 'dotenv/config'
+import * as dotenv from 'dotenv'
+import { resolve } from 'path'
+dotenv.config({ path: resolve(process.cwd(), '.env.local') })
+
 import { neon } from '@neondatabase/serverless'
 import { drizzle } from 'drizzle-orm/neon-http'
 import { eq } from 'drizzle-orm'
 import * as schema from '../db/schema'
 
-const sql = neon(process.env.DATABASE_URL!)
+if (!process.env.DATABASE_URL) {
+  console.error('DATABASE_URL is not set. Ensure .env.local exists and contains DATABASE_URL.')
+  process.exit(1)
+}
+
+const sql = neon(process.env.DATABASE_URL)
 const db = drizzle(sql, { schema })
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
@@ -632,32 +640,31 @@ async function main() {
       .where(eq(schema.colleges.slug, collegeSlug))
       .limit(1)
 
-    let collegeId: string
     if (existing.length) {
-      collegeId = existing[0].id
       console.log(`  skip (exists): ${col.name}`)
-    } else {
-      const [inserted] = await db
-        .insert(schema.colleges)
-        .values({
-          userId,
-          name: col.name,
-          slug: collegeSlug,
-          city: col.city,
-          state: col.state,
-          nirfRank: col.nirfRank,
-          category: col.category,
-          collegeType: col.collegeType,
-          verificationStatus: 'approved',
-          engineeringCutoff: col.engineeringCutoff !== undefined ? String(col.engineeringCutoff) : undefined,
-          medicalCutoff: col.medicalCutoff !== undefined ? String(col.medicalCutoff) : undefined,
-        })
-        .returning({ id: schema.colleges.id })
-
-      collegeId = inserted.id
-      collegesInserted++
-      console.log(`  inserted: ${col.name}`)
+      continue
     }
+
+    const [inserted] = await db
+      .insert(schema.colleges)
+      .values({
+        userId,
+        name: col.name,
+        slug: collegeSlug,
+        city: col.city,
+        state: col.state,
+        nirfRank: col.nirfRank,
+        category: col.category,
+        collegeType: col.collegeType,
+        verificationStatus: 'approved',
+        engineeringCutoff: col.engineeringCutoff !== undefined ? String(col.engineeringCutoff) : undefined,
+        medicalCutoff: col.medicalCutoff !== undefined ? String(col.medicalCutoff) : undefined,
+      })
+      .returning({ id: schema.colleges.id })
+
+    const collegeId = inserted.id
+    collegesInserted++
+    console.log(`  inserted: ${col.name}`)
 
     for (const course of col.courses) {
       await db
