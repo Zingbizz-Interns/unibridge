@@ -76,7 +76,7 @@ const demoColleges: Array<{
     courses: [
       { name: 'B.Tech Computer Science', degree: 'B.Tech', duration: 4, courseLevel: 'ug', stream: 'Computer Science', annualFee: 112000 },
       { name: 'B.Tech Mechanical Engineering', degree: 'B.Tech', duration: 4, courseLevel: 'ug', stream: 'Mechanical Engineering', annualFee: 112000 },
-      { name: 'M.Tech VLSI Design', degree: 'M.Tech', duration: 2, courseLevel: 'pg', stream: 'Electronics Engineering', annualFee: 45000 },
+      { name: 'M.Tech VLSI Design', degree: 'M.Tech', duration: 2, courseLevel: 'pg', stream: 'Electronics Engineering', annualFee: 65000 },
     ],
   },
   {
@@ -131,8 +131,8 @@ const demoColleges: Array<{
     name: 'BITS Pilani', city: 'Pilani', state: 'Rajasthan', nirfRank: 25,
     category: 'engineering', collegeType: 'university', engineeringCutoff: 96.00,
     courses: [
-      { name: 'B.E. Computer Science', degree: 'B.E.', duration: 4, courseLevel: 'ug', stream: 'Computer Science', annualFee: 490000 },
-      { name: 'B.E. Electrical & Electronics', degree: 'B.E.', duration: 4, courseLevel: 'ug', stream: 'Electrical Engineering', annualFee: 490000 },
+      { name: 'B.E. Computer Science', degree: 'B.E.', duration: 4, courseLevel: 'ug', stream: 'Computer Science', annualFee: 290000 },
+      { name: 'B.E. Electrical & Electronics', degree: 'B.E.', duration: 4, courseLevel: 'ug', stream: 'Electrical Engineering', annualFee: 290000 },
     ],
   },
   {
@@ -147,8 +147,8 @@ const demoColleges: Array<{
     name: 'Jadavpur University', city: 'Kolkata', state: 'West Bengal', nirfRank: 18,
     category: 'engineering', collegeType: 'university', engineeringCutoff: 96.00,
     courses: [
-      { name: 'B.E. Computer Science', degree: 'B.E.', duration: 4, courseLevel: 'ug', stream: 'Computer Science', annualFee: 22000 },
-      { name: 'B.E. Electronics & Telecom', degree: 'B.E.', duration: 4, courseLevel: 'ug', stream: 'Electronics Engineering', annualFee: 22000 },
+      { name: 'B.E. Computer Science', degree: 'B.E.', duration: 4, courseLevel: 'ug', stream: 'Computer Science', annualFee: 65000 },
+      { name: 'B.E. Electronics & Telecom', degree: 'B.E.', duration: 4, courseLevel: 'ug', stream: 'Electronics Engineering', annualFee: 65000 },
     ],
   },
   {
@@ -171,12 +171,12 @@ const demoColleges: Array<{
     name: 'Thapar Institute of Engineering and Technology', city: 'Patiala', state: 'Punjab', nirfRank: 55,
     category: 'engineering', collegeType: 'university', engineeringCutoff: 90.00,
     courses: [
-      { name: 'B.E. Computer Engineering', degree: 'B.E.', duration: 4, courseLevel: 'ug', stream: 'Computer Science', annualFee: 315000 },
-      { name: 'B.E. Electronics & Communication', degree: 'B.E.', duration: 4, courseLevel: 'ug', stream: 'Electronics Engineering', annualFee: 315000 },
+      { name: 'B.E. Computer Engineering', degree: 'B.E.', duration: 4, courseLevel: 'ug', stream: 'Computer Science', annualFee: 295000 },
+      { name: 'B.E. Electronics & Communication', degree: 'B.E.', duration: 4, courseLevel: 'ug', stream: 'Electronics Engineering', annualFee: 295000 },
     ],
   },
   {
-    name: 'SRM Institute of Science and Technology', city: 'Chennai', state: 'Tamil Nadu', nirfRank: 50,
+    name: 'SRM Institute of Science and Technology', city: 'Chennai', state: 'Tamil Nadu',
     category: 'engineering', collegeType: 'university', engineeringCutoff: 89.00,
     courses: [
       { name: 'B.Tech Computer Science & Engineering', degree: 'B.Tech', duration: 4, courseLevel: 'ug', stream: 'Computer Science', annualFee: 250000 },
@@ -184,7 +184,7 @@ const demoColleges: Array<{
     ],
   },
   {
-    name: 'Manipal Institute of Technology', city: 'Manipal', state: 'Karnataka', nirfRank: 80,
+    name: 'Manipal Institute of Technology', city: 'Manipal', state: 'Karnataka',
     category: 'engineering', collegeType: 'university', engineeringCutoff: 85.00,
     courses: [
       { name: 'B.Tech Computer & Communication Engineering', degree: 'B.Tech', duration: 4, courseLevel: 'ug', stream: 'Computer Science', annualFee: 275000 },
@@ -197,16 +197,16 @@ const demoColleges: Array<{
     name: 'AIIMS New Delhi', city: 'Delhi', state: 'Delhi', nirfRank: 1,
     category: 'medical', collegeType: 'university', medicalCutoff: 99.90,
     courses: [
-      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 1628 },
-      { name: 'MD Internal Medicine', degree: 'MD', duration: 3, courseLevel: 'pg', stream: 'Medicine', annualFee: 5000 },
+      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 60000 },
+      { name: 'MD Internal Medicine', degree: 'MD', duration: 3, courseLevel: 'pg', stream: 'Medicine', annualFee: 75000 },
     ],
   },
   {
     name: 'PGIMER Chandigarh', city: 'Chandigarh', state: 'Punjab', nirfRank: 2,
     category: 'medical', collegeType: 'university', medicalCutoff: 99.80,
     courses: [
-      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 2000 },
-      { name: 'MS General Surgery', degree: 'MS', duration: 3, courseLevel: 'pg', stream: 'Surgery', annualFee: 5000 },
+      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 55000 },
+      { name: 'MS General Surgery', degree: 'MS', duration: 3, courseLevel: 'pg', stream: 'Surgery', annualFee: 70000 },
     ],
   },
   {
@@ -221,62 +221,64 @@ const demoColleges: Array<{
     name: 'AIIMS Bhopal', city: 'Bhopal', state: 'Madhya Pradesh', nirfRank: 4,
     category: 'medical', collegeType: 'university', medicalCutoff: 99.70,
     courses: [
-      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 1628 },
-      { name: 'B.Sc Nursing', degree: 'B.Sc', duration: 4, courseLevel: 'ug', stream: 'Nursing', annualFee: 15000 },
+      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 60000 },
+      { name: 'B.Sc Nursing', degree: 'B.Sc', duration: 4, courseLevel: 'ug', stream: 'Nursing', annualFee: 55000 },
     ],
   },
   {
     name: 'JIPMER Puducherry', city: 'Puducherry', state: 'Puducherry', nirfRank: 5,
     category: 'medical', collegeType: 'university', medicalCutoff: 99.60,
     courses: [
-      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 1000 },
+      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 55000 },
+      { name: 'BDS', degree: 'BDS', duration: 5, courseLevel: 'ug', stream: 'Dentistry', annualFee: 65000 },
     ],
   },
   {
     name: 'Maulana Azad Medical College', city: 'Delhi', state: 'Delhi', nirfRank: 7,
     category: 'medical', collegeType: 'affiliated', medicalCutoff: 99.40,
     courses: [
-      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 28000 },
-      { name: 'MD Pathology', degree: 'MD', duration: 3, courseLevel: 'pg', stream: 'Medicine', annualFee: 50000 },
+      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 55000 },
+      { name: 'MD Pathology', degree: 'MD', duration: 3, courseLevel: 'pg', stream: 'Medicine', annualFee: 70000 },
     ],
   },
   {
     name: 'Madras Medical College', city: 'Chennai', state: 'Tamil Nadu', nirfRank: 9,
     category: 'medical', collegeType: 'affiliated', medicalCutoff: 99.10,
     courses: [
-      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 28000 },
-      { name: 'BDS', degree: 'BDS', duration: 5, courseLevel: 'ug', stream: 'Dentistry', annualFee: 35000 },
+      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 55000 },
+      { name: 'BDS', degree: 'BDS', duration: 5, courseLevel: 'ug', stream: 'Dentistry', annualFee: 60000 },
     ],
   },
   {
     name: 'Seth GS Medical College Mumbai', city: 'Mumbai', state: 'Maharashtra', nirfRank: 11,
     category: 'medical', collegeType: 'affiliated', medicalCutoff: 99.05,
     courses: [
-      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 40000 },
-      { name: 'MD Biochemistry', degree: 'MD', duration: 3, courseLevel: 'pg', stream: 'Medicine', annualFee: 60000 },
+      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 60000 },
+      { name: 'MD Biochemistry', degree: 'MD', duration: 3, courseLevel: 'pg', stream: 'Medicine', annualFee: 80000 },
     ],
   },
   {
     name: 'Grant Medical College Mumbai', city: 'Mumbai', state: 'Maharashtra', nirfRank: 12,
     category: 'medical', collegeType: 'affiliated', medicalCutoff: 99.00,
     courses: [
-      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 35000 },
+      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 60000 },
+      { name: 'MD Community Medicine', degree: 'MD', duration: 3, courseLevel: 'pg', stream: 'Medicine', annualFee: 75000 },
     ],
   },
   {
     name: 'Bangalore Medical College and Research Institute', city: 'Bangalore', state: 'Karnataka', nirfRank: 15,
     category: 'medical', collegeType: 'affiliated', medicalCutoff: 98.80,
     courses: [
-      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 30000 },
-      { name: 'B.Sc Nursing', degree: 'B.Sc', duration: 4, courseLevel: 'ug', stream: 'Nursing', annualFee: 55000 },
+      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 55000 },
+      { name: 'B.Sc Nursing', degree: 'B.Sc', duration: 4, courseLevel: 'ug', stream: 'Nursing', annualFee: 65000 },
     ],
   },
   {
     name: 'Kasturba Medical College Manipal', city: 'Manipal', state: 'Karnataka', nirfRank: 18,
     category: 'medical', collegeType: 'university', medicalCutoff: 98.50,
     courses: [
-      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 1350000 },
-      { name: 'BDS', degree: 'BDS', duration: 5, courseLevel: 'ug', stream: 'Dentistry', annualFee: 850000 },
+      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 950000 },
+      { name: 'BDS', degree: 'BDS', duration: 5, courseLevel: 'ug', stream: 'Dentistry', annualFee: 750000 },
     ],
   },
   {
@@ -284,6 +286,7 @@ const demoColleges: Array<{
     category: 'medical', collegeType: 'autonomous', medicalCutoff: 98.20,
     courses: [
       { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 950000 },
+      { name: 'BDS', degree: 'BDS', duration: 5, courseLevel: 'ug', stream: 'Dentistry', annualFee: 750000 },
     ],
   },
   {
@@ -385,7 +388,7 @@ const demoColleges: Array<{
     ],
   },
   {
-    name: 'Stella Maris College Chennai', city: 'Chennai', state: 'Tamil Nadu', nirfRank: 22,
+    name: 'Stella Maris College Chennai', city: 'Chennai', state: 'Tamil Nadu',
     category: 'arts_science', collegeType: 'autonomous',
     courses: [
       { name: 'BA Social Work', degree: 'BA', duration: 3, courseLevel: 'ug', stream: 'Social Work', annualFee: 25000 },
@@ -399,7 +402,7 @@ const demoColleges: Array<{
     category: 'arts_science', collegeType: 'university',
     courses: [
       { name: 'Post Graduate Programme in Management', degree: 'PGDM', duration: 2, courseLevel: 'pg', stream: 'Management', annualFee: 1100000 },
-      { name: 'Fellow Programme in Management', degree: 'FPM', duration: 4, courseLevel: 'doctorate', stream: 'Management', annualFee: 100000 },
+      { name: 'Fellow Programme in Management', degree: 'FPM', duration: 4, courseLevel: 'doctorate', stream: 'Management', annualFee: 250000 },
     ],
   },
   {
@@ -407,6 +410,7 @@ const demoColleges: Array<{
     category: 'arts_science', collegeType: 'university',
     courses: [
       { name: 'Post Graduate Programme in Management', degree: 'PGDM', duration: 2, courseLevel: 'pg', stream: 'Management', annualFee: 1100000 },
+      { name: 'Executive Post Graduate Programme', degree: 'PGDM', duration: 1, courseLevel: 'pg', stream: 'Management', annualFee: 2000000 },
     ],
   },
   {
@@ -414,6 +418,7 @@ const demoColleges: Array<{
     category: 'arts_science', collegeType: 'university',
     courses: [
       { name: 'MBA', degree: 'MBA', duration: 2, courseLevel: 'pg', stream: 'Management', annualFee: 1050000 },
+      { name: 'PGDM Business Analytics', degree: 'PGDM', duration: 1, courseLevel: 'pg', stream: 'Management', annualFee: 550000 },
     ],
   },
   {
@@ -421,6 +426,7 @@ const demoColleges: Array<{
     category: 'arts_science', collegeType: 'university',
     courses: [
       { name: 'Post Graduate Programme in Management', degree: 'PGDM', duration: 2, courseLevel: 'pg', stream: 'Management', annualFee: 1050000 },
+      { name: 'Executive Post Graduate Programme', degree: 'PGDM', duration: 1, courseLevel: 'pg', stream: 'Management', annualFee: 800000 },
     ],
   },
   {
@@ -436,14 +442,15 @@ const demoColleges: Array<{
     category: 'arts_science', collegeType: 'autonomous',
     courses: [
       { name: 'PGDM', degree: 'PGDM', duration: 2, courseLevel: 'pg', stream: 'Management', annualFee: 1050000 },
-      { name: 'BBA', degree: 'BBA', duration: 3, courseLevel: 'ug', stream: 'Management', annualFee: 150000 },
+      { name: 'BBA', degree: 'BBA', duration: 3, courseLevel: 'ug', stream: 'Management', annualFee: 250000 },
     ],
   },
   {
     name: 'MDI Gurgaon', city: 'Gurgaon', state: 'Haryana', nirfRank: 12,
     category: 'arts_science', collegeType: 'autonomous',
     courses: [
-      { name: 'PGDM', degree: 'PGDM', duration: 2, courseLevel: 'pg', stream: 'Management', annualFee: 2300000 },
+      { name: 'PGDM', degree: 'PGDM', duration: 2, courseLevel: 'pg', stream: 'Management', annualFee: 1900000 },
+      { name: 'PGDM-HRM', degree: 'PGDM', duration: 2, courseLevel: 'pg', stream: 'Management', annualFee: 1800000 },
     ],
   },
   {
@@ -459,6 +466,7 @@ const demoColleges: Array<{
     category: 'arts_science', collegeType: 'autonomous',
     courses: [
       { name: 'MBA', degree: 'MBA', duration: 2, courseLevel: 'pg', stream: 'Management', annualFee: 1300000 },
+      { name: 'Executive MBA', degree: 'MBA', duration: 1, courseLevel: 'pg', stream: 'Management', annualFee: 900000 },
     ],
   },
   {
@@ -484,6 +492,7 @@ const demoColleges: Array<{
     category: 'arts_science', collegeType: 'affiliated',
     courses: [
       { name: 'B.Com (Honours)', degree: 'B.Com', duration: 3, courseLevel: 'ug', stream: 'Commerce', annualFee: 14000 },
+      { name: 'M.Com', degree: 'M.Com', duration: 2, courseLevel: 'pg', stream: 'Commerce', annualFee: 16000 },
     ],
   },
   {
@@ -523,10 +532,11 @@ const demoColleges: Array<{
     category: 'arts_science', collegeType: 'autonomous',
     courses: [
       { name: 'B.Com (Accounting)', degree: 'B.Com', duration: 3, courseLevel: 'ug', stream: 'Commerce', annualFee: 28000 },
+      { name: 'BMS', degree: 'BMS', duration: 3, courseLevel: 'ug', stream: 'Commerce', annualFee: 32000 },
     ],
   },
   {
-    name: 'Bishop Heber College Tiruchirappalli', city: 'Tiruchirappalli', state: 'Tamil Nadu', nirfRank: 20,
+    name: 'Bishop Heber College Tiruchirappalli', city: 'Tiruchirappalli', state: 'Tamil Nadu',
     category: 'arts_science', collegeType: 'autonomous',
     courses: [
       { name: 'B.Com General', degree: 'B.Com', duration: 3, courseLevel: 'ug', stream: 'Commerce', annualFee: 18000 },
@@ -548,6 +558,7 @@ const demoColleges: Array<{
     category: 'arts_science', collegeType: 'university',
     courses: [
       { name: 'BA LLB (Hons.)', degree: 'BA LLB', duration: 5, courseLevel: 'ug', stream: 'Law', annualFee: 195000 },
+      { name: 'LLM', degree: 'LLM', duration: 1, courseLevel: 'pg', stream: 'Law', annualFee: 85000 },
     ],
   },
   {
@@ -571,6 +582,7 @@ const demoColleges: Array<{
     category: 'arts_science', collegeType: 'university',
     courses: [
       { name: 'BA LLB (Hons.)', degree: 'BA LLB', duration: 5, courseLevel: 'ug', stream: 'Law', annualFee: 230000 },
+      { name: 'LLM', degree: 'LLM', duration: 1, courseLevel: 'pg', stream: 'Law', annualFee: 90000 },
     ],
   },
   {
