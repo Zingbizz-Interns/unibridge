@@ -301,7 +301,7 @@ const demoColleges: Array<{
     name: 'Sri Ramachandra Medical College Chennai', city: 'Chennai', state: 'Tamil Nadu', nirfRank: 30,
     category: 'medical', collegeType: 'university', medicalCutoff: 97.50,
     courses: [
-      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 1100000 },
+      { name: 'MBBS', degree: 'MBBS', duration: 5, courseLevel: 'ug', stream: 'Medicine', annualFee: 950000 },
       { name: 'BAMS', degree: 'BAMS', duration: 5, courseLevel: 'ug', stream: 'Ayurveda', annualFee: 250000 },
     ],
   },
