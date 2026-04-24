@@ -170,7 +170,9 @@ export default async function CollegesPage({ searchParams }: { searchParams: Pro
 
   const baseConditions: SQL[] = [eq(colleges.verificationStatus, 'approved')]
   if (q) baseConditions.push(sql`${colleges.name} % ${q}`)
-  if (category !== 'all') baseConditions.push(eq(colleges.category, category as (typeof categoryEnum.enumValues)[number]))
+  if (category !== 'all' && mappedStreamCategories.length === 0) {
+    baseConditions.push(eq(colleges.category, category as (typeof categoryEnum.enumValues)[number]))
+  }
   if (state) baseConditions.push(eq(colleges.state, state))
   if (city) baseConditions.push(eq(colleges.city, city))
   if (collegeTypes.length) baseConditions.push(inArray(colleges.collegeType, collegeTypes))
