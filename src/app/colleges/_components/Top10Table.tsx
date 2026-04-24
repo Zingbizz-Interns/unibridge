@@ -36,10 +36,14 @@ function formatCutoff(
   medicalCutoff: string | null,
 ): string {
   const lower = streamName.toLowerCase()
-  if (lower === 'engineering' && engineeringCutoff)
-    return Number(engineeringCutoff).toFixed(2)
-  if (lower === 'medical' && medicalCutoff)
-    return Number(medicalCutoff).toFixed(2)
+  if (lower === 'engineering' && engineeringCutoff) {
+    const num = Number(engineeringCutoff)
+    return Number.isNaN(num) ? '—' : num.toFixed(2)
+  }
+  if (lower === 'medical' && medicalCutoff) {
+    const num = Number(medicalCutoff)
+    return Number.isNaN(num) ? '—' : num.toFixed(2)
+  }
   return '—'
 }
 
