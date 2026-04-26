@@ -1,5 +1,6 @@
 export * from './users'
 export * from './colleges'
+export * from './college-claims'
 export * from './courses'
 export * from './applications'
 export * from './application-status-history'

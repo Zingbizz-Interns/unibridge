@@ -58,6 +58,7 @@ export const colleges = pgTable(
     verificationStatus: verificationStatusEnum('verification_status').default(
       'pending'
     ),
+    counsellorName: varchar('counsellor_name', { length: 255 }),
     counsellorEmail: varchar('counsellor_email', { length: 255 }),
     counsellorPhone: varchar('counsellor_phone', { length: 15 }),
     createdAt: timestamp('created_at').defaultNow(),
