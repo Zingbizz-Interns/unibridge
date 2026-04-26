@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import { pgTable, pgEnum, uuid, varchar, text, timestamp, index } from 'drizzle-orm/pg-core'
 import { colleges } from './colleges'
 import { users } from './users'
@@ -29,8 +30,6 @@ export const collegeClaims = pgTable(
     index('college_claims_status_idx').on(table.status),
   ]
 )
-
-import { relations } from 'drizzle-orm'
 
 export const collegeClaimsRelations = relations(collegeClaims, ({ one }) => ({
   college: one(colleges, {
