@@ -30,24 +30,43 @@ function ClaimCard({
 
   async function approve() {
     setLoading(true)
-    await fetch(`/api/admin/claims/${claim.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'approved' }),
-    })
-    onApprove(claim.id)
+    try {
+      const res = await fetch(`/api/admin/claims/${claim.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'approved' }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error ?? 'Failed to approve')
+      }
+      onApprove(claim.id)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function reject() {
     setLoading(true)
-    await fetch(`/api/admin/claims/${claim.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'rejected', reason }),
-    })
-    onReject(claim.id)
-    setRejectOpen(false)
-    setLoading(false)
+    try {
+      const res = await fetch(`/api/admin/claims/${claim.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'rejected', reason }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error ?? 'Failed to reject')
+      }
+      onReject(claim.id)
+      setRejectOpen(false)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
