@@ -53,19 +53,21 @@ export async function approveClaim(claimId: string) {
   })
   if (!claim) throw new Error('Claim not found')
 
-  await db
-    .update(collegeClaims)
-    .set({ status: 'approved', reviewedAt: new Date() })
-    .where(eq(collegeClaims.id, claimId))
+  await db.transaction(async (tx) => {
+    await tx
+      .update(collegeClaims)
+      .set({ status: 'approved', reviewedAt: new Date() })
+      .where(eq(collegeClaims.id, claimId))
 
-  await db
-    .update(colleges)
-    .set({
-      userId: claim.userId,
-      counsellorName: claim.counsellorName,
-      counsellorPhone: claim.counsellorPhone,
-    })
-    .where(eq(colleges.id, claim.collegeId))
+    await tx
+      .update(colleges)
+      .set({
+        userId: claim.userId,
+        counsellorName: claim.counsellorName,
+        counsellorPhone: claim.counsellorPhone,
+      })
+      .where(eq(colleges.id, claim.collegeId))
+  })
 
   return claim
 }
