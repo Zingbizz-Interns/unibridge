@@ -27,9 +27,11 @@ function ClaimCard({
   const [rejectOpen, setRejectOpen] = useState(false)
   const [reason, setReason] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function approve() {
     setLoading(true)
+    setError(null)
     try {
       const res = await fetch(`/api/admin/claims/${claim.id}`, {
         method: 'PATCH',
@@ -42,7 +44,7 @@ function ClaimCard({
       }
       onApprove(claim.id)
     } catch (err) {
-      console.error(err)
+      setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setLoading(false)
     }
@@ -50,6 +52,7 @@ function ClaimCard({
 
   async function reject() {
     setLoading(true)
+    setError(null)
     try {
       const res = await fetch(`/api/admin/claims/${claim.id}`, {
         method: 'PATCH',
@@ -63,7 +66,7 @@ function ClaimCard({
       onReject(claim.id)
       setRejectOpen(false)
     } catch (err) {
-      console.error(err)
+      setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setLoading(false)
     }
@@ -121,6 +124,10 @@ function ClaimCard({
           Reject
         </button>
       </div>
+
+      {error && (
+        <p className="text-xs text-red-600 bg-red-50 rounded-2xl px-3 py-2">{error}</p>
+      )}
 
       {rejectOpen && (
         <div className="space-y-2 pt-1">

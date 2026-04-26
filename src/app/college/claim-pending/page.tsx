@@ -55,7 +55,7 @@ export default async function ClaimPendingPage() {
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-md-secondary-container rounded-full mb-5">
             <CheckCircle2 className="w-4 h-4 text-md-primary shrink-0" />
             <span className="text-sm font-medium text-md-on-secondary-container">
-              {claim.college.name}
+              {claim.college?.name ?? 'Unknown College'}
             </span>
           </div>
 

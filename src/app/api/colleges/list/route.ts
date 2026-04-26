@@ -15,5 +15,7 @@ export async function GET() {
     .where(eq(colleges.verificationStatus, 'approved'))
     .orderBy(asc(colleges.name))
 
-  return NextResponse.json(rows)
+  return NextResponse.json(rows, {
+    headers: { 'Cache-Control': 'public, max-age=300, stale-while-revalidate=60' },
+  })
 }

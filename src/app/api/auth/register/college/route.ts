@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { users, colleges } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { users, colleges, collegeClaims } from '@/db/schema'
+import { eq, and } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { emailSchema, phoneSchema, passwordSchema } from '@/validators'
 import { hasActiveClaimForCollege, createClaim } from '@/lib/college-claims'
 import { sendClaimSubmittedAdminEmail } from '@/lib/admin-mail'
+
+const optionalPhone = z.preprocess(
+  (v) => (v === '' ? undefined : v),
+  phoneSchema.optional()
+)
 
 const claimSchema = z.object({
   existingCollegeId: z.string().uuid(),
@@ -15,7 +20,7 @@ const claimSchema = z.object({
   phone: phoneSchema,
   password: passwordSchema,
   counsellorName: z.string().optional(),
-  counsellorPhone: z.string().optional(),
+  counsellorPhone: optionalPhone,
 })
 
 const newCollegeSchema = z.object({
@@ -58,7 +63,7 @@ async function handleClaim(body: unknown) {
     counsellorPhone,
   } = claimSchema.parse(body)
 
-  // Check college exists
+  // Check college exists and get current owner
   const college = await db.query.colleges.findFirst({
     where: eq(colleges.id, existingCollegeId),
     columns: { id: true, name: true, userId: true },
@@ -67,7 +72,17 @@ async function handleClaim(body: unknown) {
     return NextResponse.json({ error: 'College not found' }, { status: 404 })
   }
 
-  // Block if already has an approved admin or pending/approved claim
+  // Block if college already has a real (non-system) admin
+  const [owner] = await db
+    .select({ email: users.email })
+    .from(users)
+    .where(eq(users.id, college.userId))
+    .limit(1)
+  if (owner && !owner.email.endsWith('.internal')) {
+    return NextResponse.json({ error: 'This college already has a registered admin.' }, { status: 409 })
+  }
+
+  // Block if pending or approved claim already exists
   const activeClaim = await hasActiveClaimForCollege(existingCollegeId)
   if (activeClaim) {
     const msg =
@@ -77,13 +92,41 @@ async function handleClaim(body: unknown) {
     return NextResponse.json({ error: msg }, { status: 409 })
   }
 
-  // Block if user email already exists
+  // Check if email already exists
   const existingUser = await db.query.users.findFirst({
     where: eq(users.email, email),
-    columns: { id: true },
+    columns: { id: true, passwordHash: true },
   })
+
   if (existingUser) {
-    return NextResponse.json({ error: 'An account with this email already exists' }, { status: 400 })
+    // Re-apply path: allow if the user has a rejected claim for this college
+    const rejectedClaim = await db.query.collegeClaims.findFirst({
+      where: and(
+        eq(collegeClaims.userId, existingUser.id),
+        eq(collegeClaims.collegeId, existingCollegeId),
+        eq(collegeClaims.status, 'rejected')
+      ),
+      columns: { id: true },
+    })
+    if (!rejectedClaim) {
+      return NextResponse.json({ error: 'An account with this email already exists' }, { status: 400 })
+    }
+    const valid = await bcrypt.compare(password, existingUser.passwordHash)
+    if (!valid) {
+      return NextResponse.json({ error: 'Incorrect password' }, { status: 400 })
+    }
+    await createClaim({
+      collegeId: existingCollegeId,
+      userId: existingUser.id,
+      adminName,
+      adminPhone: phone,
+      counsellorName,
+      counsellorPhone,
+    })
+    try {
+      await sendClaimSubmittedAdminEmail({ collegeName: college.name, adminName, adminEmail: email })
+    } catch { /* Non-fatal */ }
+    return NextResponse.json({ success: true, path: 'claim' })
   }
 
   const passwordHash = await bcrypt.hash(password, 10)
@@ -109,9 +152,7 @@ async function handleClaim(body: unknown) {
 
   try {
     await sendClaimSubmittedAdminEmail({ collegeName: college.name, adminName, adminEmail: email })
-  } catch {
-    // Non-fatal
-  }
+  } catch { /* Non-fatal */ }
 
   return NextResponse.json({ success: true, path: 'claim' })
 }

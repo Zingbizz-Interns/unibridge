@@ -1,11 +1,12 @@
 import 'server-only'
 import { db } from '@/lib/db'
 import { colleges, collegeClaims, users } from '@/db/schema'
-import { eq, and, inArray } from 'drizzle-orm'
+import { eq, and, inArray, desc } from 'drizzle-orm'
 
 export async function getClaimByUserId(userId: string) {
   return db.query.collegeClaims.findFirst({
     where: eq(collegeClaims.userId, userId),
+    orderBy: desc(collegeClaims.createdAt),
     with: {
       college: {
         columns: { id: true, name: true, city: true, state: true },
@@ -48,12 +49,16 @@ export async function createClaim({
 }
 
 export async function approveClaim(claimId: string) {
-  const claim = await db.query.collegeClaims.findFirst({
-    where: eq(collegeClaims.id, claimId),
-  })
-  if (!claim) throw new Error('Claim not found')
-
   await db.transaction(async (tx) => {
+    const [claim] = await tx
+      .select()
+      .from(collegeClaims)
+      .where(eq(collegeClaims.id, claimId))
+      .limit(1)
+
+    if (!claim) throw new Error('Claim not found')
+    if (claim.status !== 'pending') throw new Error('Claim already reviewed')
+
     await tx
       .update(collegeClaims)
       .set({ status: 'approved', reviewedAt: new Date() })
@@ -68,8 +73,6 @@ export async function approveClaim(claimId: string) {
       })
       .where(eq(colleges.id, claim.collegeId))
   })
-
-  return claim
 }
 
 export async function rejectClaim(claimId: string, reason?: string) {
