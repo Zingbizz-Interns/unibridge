@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/Button'
 import ApplicationStatusBadge, { formatApplicationStatus } from '@/components/ApplicationStatusBadge'
 import { colleges, documents } from '@/db/schema'
+import { getClaimByUserId } from '@/lib/college-claims'
 import { getCollegeApplicationOverview } from '@/lib/college-applications'
 import { db } from '@/lib/db'
 import { needsCollegeOnboarding } from '@/lib/college-onboarding'
@@ -117,13 +118,17 @@ export default async function CollegeDashboardPage() {
   }
 
   if (!college) {
-    redirect('/college/onboarding')
+    const claim = await getClaimByUserId(user.id)
+    if (claim) {
+      redirect('/college/claim-pending')
+    }
+    redirect('/login')
   }
 
   const overview = await getCollegeApplicationOverview(college.id)
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 animate-page-enter">
       <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-sm font-medium uppercase tracking-[0.2em] text-md-primary">College Dashboard</p>
@@ -170,7 +175,7 @@ export default async function CollegeDashboardPage() {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 animate-stagger">
         <StatCard label="Total applications received" value={overview.stats.total} />
         <StatCard label="Pending review" value={overview.stats.pendingReview} />
         <StatCard label="Shortlisted" value={overview.stats.shortlisted} />
