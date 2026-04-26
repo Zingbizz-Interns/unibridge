@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { AdminCollegeStatusBadge } from '@/components/admin/AdminCollegeStatusBadge'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
+import { ClaimsTab, type Claim } from './ClaimsTab'
 
 type VerificationStatus = 'pending' | 'approved' | 'rejected'
 
@@ -188,6 +189,8 @@ function FilterTabs({
 }
 
 export default function AdminVerificationsPage() {
+  const [mainTab, setMainTab] = useState<'colleges' | 'claims'>('colleges')
+
   const [status, setStatus] = useState<VerificationStatus>('pending')
   const [colleges, setColleges] = useState<CollegeRow[]>([])
   const [total, setTotal] = useState(0)
@@ -204,6 +207,26 @@ export default function AdminVerificationsPage() {
   const [rejectTarget, setRejectTarget] = useState<CollegeRow | null>(null)
   const [previewDocument, setPreviewDocument] = useState<{ id: string; title: string } | null>(null)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+
+  const [claims, setClaims] = useState<Claim[]>([])
+  const [claimsLoading, setClaimsLoading] = useState(false)
+  const [claimsError, setClaimsError] = useState('')
+
+  useEffect(() => {
+    if (mainTab !== 'claims') return
+    setClaimsLoading(true)
+    setClaimsError('')
+    fetch('/api/admin/claims')
+      .then(async (res) => {
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || 'Failed to load claims')
+        setClaims(data)
+      })
+      .catch((err: unknown) => {
+        setClaimsError(err instanceof Error ? err.message : 'Something went wrong')
+      })
+      .finally(() => setClaimsLoading(false))
+  }, [mainTab])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -399,7 +422,7 @@ export default function AdminVerificationsPage() {
   const rangeEnd = Math.min(page * limit, total)
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-page-enter">
       {rejectTarget && (
         <RejectModal
           collegeName={rejectTarget.name}
@@ -424,7 +447,7 @@ export default function AdminVerificationsPage() {
           </p>
         </div>
 
-        {status === 'pending' && (
+        {mainTab === 'colleges' && status === 'pending' && (
           <div className="flex flex-wrap items-center gap-3">
             <label className="flex items-center gap-2 text-sm text-md-on-surface-variant">
               <input
@@ -448,155 +471,207 @@ export default function AdminVerificationsPage() {
         )}
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <FilterTabs active={status} onChange={handleFilterChange} />
-        {total > 0 && (
-          <span className="text-sm text-md-on-surface-variant">
-            Showing {rangeStart}-{rangeEnd} of {total}
-          </span>
-        )}
+      {/* Main tab switcher */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setMainTab('colleges')}
+          className={`rounded-full px-5 py-2 text-sm font-medium transition-all duration-200 ${
+            mainTab === 'colleges'
+              ? 'bg-md-secondary-container text-md-on-secondary-container'
+              : 'text-md-on-surface-variant hover:bg-md-primary/8'
+          }`}
+        >
+          Pending Colleges
+          {status === 'pending' && total > 0 && (
+            <span className="ml-2 rounded-full bg-md-primary px-2 py-0.5 text-xs text-white">
+              {total}
+            </span>
+          )}
+        </button>
+        <button
+          onClick={() => setMainTab('claims')}
+          className={`rounded-full px-5 py-2 text-sm font-medium transition-all duration-200 ${
+            mainTab === 'claims'
+              ? 'bg-md-secondary-container text-md-on-secondary-container'
+              : 'text-md-on-surface-variant hover:bg-md-primary/8'
+          }`}
+        >
+          College Claims
+          {claims.length > 0 && (
+            <span className="ml-2 rounded-full bg-md-primary px-2 py-0.5 text-xs text-white">
+              {claims.length}
+            </span>
+          )}
+        </button>
       </div>
 
-      {fetchError && (
-        <div className="rounded-2xl bg-rose-100 p-4 text-sm text-rose-800">{fetchError}</div>
-      )}
-
-      {actionError && (
-        <div className="rounded-2xl bg-rose-100 p-4 text-sm text-rose-800">{actionError}</div>
-      )}
-
-      {successMessage && (
-        <div className="rounded-2xl bg-emerald-100 p-4 text-sm text-emerald-800">
-          {successMessage}
-        </div>
-      )}
-
-      {loading ? (
-        <div className="py-16 text-center text-sm text-md-on-surface-variant">Loading queue...</div>
-      ) : colleges.length === 0 ? (
-        <Card elevation="elevated">
-          <CardContent className="py-14 text-center">
-            <CardTitle className="text-md-on-surface-variant">No {status} colleges</CardTitle>
-            <CardDescription>Nothing to review in this tab right now.</CardDescription>
-          </CardContent>
-        </Card>
+      {mainTab === 'claims' ? (
+        <>
+          {claimsError && (
+            <div className="rounded-2xl bg-rose-100 p-4 text-sm text-rose-800">{claimsError}</div>
+          )}
+          {claimsLoading ? (
+            <div className="py-16 text-center text-sm text-md-on-surface-variant">Loading claims...</div>
+          ) : (
+            <ClaimsTab
+              initialClaims={claims}
+              onUpdate={setClaims}
+            />
+          )}
+        </>
       ) : (
-        <div className="space-y-6">
-          {colleges.map((college) => (
-            <Card key={college.id} elevation="elevated">
-              <CardHeader className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                <div className="space-y-2">
-                  <div className="flex flex-wrap items-center gap-3">
-                    {status === 'pending' && (
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.includes(college.id)}
-                        onChange={() => toggleSelection(college.id)}
-                        className="h-4 w-4 rounded border-md-outline"
-                        aria-label={`Select ${college.name}`}
-                      />
-                    )}
-                    <CardTitle className="text-2xl">{college.name}</CardTitle>
-                    <AdminCollegeStatusBadge status={college.verificationStatus} />
-                  </div>
-                  <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-md-on-surface-variant">
-                    <span>
-                      {[college.city, college.state].filter(Boolean).join(', ') || 'Location unavailable'}
-                    </span>
-                    {college.type && <span>{college.type}</span>}
-                    <span>Submitted {formatDate(college.createdAt)}</span>
-                  </div>
-                </div>
+        <>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <FilterTabs active={status} onChange={handleFilterChange} />
+            {total > 0 && (
+              <span className="text-sm text-md-on-surface-variant">
+                Showing {rangeStart}-{rangeEnd} of {total}
+              </span>
+            )}
+          </div>
 
-                {status === 'pending' && (
-                  <div className="flex flex-wrap gap-3">
-                    <Button
-                      variant="outline"
-                      onClick={() => setRejectTarget(college)}
-                      className="border-rose-300 text-rose-700 hover:bg-rose-50"
-                      disabled={submittingId === college.id}
-                    >
-                      Reject
-                    </Button>
-                    <Button
-                      variant="default"
-                      onClick={() => handleApprove(college.id)}
-                      disabled={submittingId === college.id}
-                    >
-                      {submittingId === college.id ? 'Approving...' : 'Approve'}
-                    </Button>
-                  </div>
-                )}
-              </CardHeader>
+          {fetchError && (
+            <div className="rounded-2xl bg-rose-100 p-4 text-sm text-rose-800">{fetchError}</div>
+          )}
 
-              <CardContent>
-                <h4 className="mb-4 text-sm font-medium uppercase tracking-wide text-md-on-surface-variant">
-                  Uploaded Documents
-                </h4>
-                {college.documents.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    {college.documents.map((document) => (
-                      <div
-                        key={document.id}
-                        className="flex items-center justify-between gap-4 rounded-3xl border border-md-outline/10 bg-md-surface p-4"
-                      >
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-medium text-md-on-surface">
-                            {document.fileName || document.type.replace(/_/g, ' ')}
-                          </p>
-                          <p className="text-xs text-md-on-surface-variant">
-                            {document.type.replace(/_/g, ' ')}
-                          </p>
-                        </div>
-                        <div className="flex shrink-0 gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              setPreviewDocument({
-                                id: document.id,
-                                title: document.fileName || document.type.replace(/_/g, ' '),
-                              })
-                            }
-                          >
-                            Preview
-                          </Button>
-                          <Button asChild variant="tonal" size="sm">
-                            <a href={`/api/admin/documents/${document.id}/download`}>Download</a>
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-rose-700">No documents uploaded.</p>
-                )}
+          {actionError && (
+            <div className="rounded-2xl bg-rose-100 p-4 text-sm text-rose-800">{actionError}</div>
+          )}
+
+          {successMessage && (
+            <div className="rounded-2xl bg-emerald-100 p-4 text-sm text-emerald-800">
+              {successMessage}
+            </div>
+          )}
+
+          {loading ? (
+            <div className="py-16 text-center text-sm text-md-on-surface-variant">Loading queue...</div>
+          ) : colleges.length === 0 ? (
+            <Card elevation="elevated">
+              <CardContent className="py-14 text-center">
+                <CardTitle className="text-md-on-surface-variant">No {status} colleges</CardTitle>
+                <CardDescription>Nothing to review in this tab right now.</CardDescription>
               </CardContent>
             </Card>
-          ))}
-        </div>
-      )}
+          ) : (
+            <div className="space-y-6">
+              {colleges.map((college) => (
+                <Card key={college.id} elevation="elevated">
+                  <CardHeader className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap items-center gap-3">
+                        {status === 'pending' && (
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.includes(college.id)}
+                            onChange={() => toggleSelection(college.id)}
+                            className="h-4 w-4 rounded border-md-outline"
+                            aria-label={`Select ${college.name}`}
+                          />
+                        )}
+                        <CardTitle className="text-2xl">{college.name}</CardTitle>
+                        <AdminCollegeStatusBadge status={college.verificationStatus} />
+                      </div>
+                      <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-md-on-surface-variant">
+                        <span>
+                          {[college.city, college.state].filter(Boolean).join(', ') || 'Location unavailable'}
+                        </span>
+                        {college.type && <span>{college.type}</span>}
+                        <span>Submitted {formatDate(college.createdAt)}</span>
+                      </div>
+                    </div>
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-4">
-          <Button
-            variant="outline"
-            onClick={() => setPage((current) => current - 1)}
-            disabled={page <= 1 || loading}
-          >
-            Previous
-          </Button>
-          <span className="text-sm text-md-on-surface-variant">
-            Page {page} of {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            onClick={() => setPage((current) => current + 1)}
-            disabled={page >= totalPages || loading}
-          >
-            Next
-          </Button>
-        </div>
+                    {status === 'pending' && (
+                      <div className="flex flex-wrap gap-3">
+                        <Button
+                          variant="outline"
+                          onClick={() => setRejectTarget(college)}
+                          className="border-rose-300 text-rose-700 hover:bg-rose-50"
+                          disabled={submittingId === college.id}
+                        >
+                          Reject
+                        </Button>
+                        <Button
+                          variant="default"
+                          onClick={() => handleApprove(college.id)}
+                          disabled={submittingId === college.id}
+                        >
+                          {submittingId === college.id ? 'Approving...' : 'Approve'}
+                        </Button>
+                      </div>
+                    )}
+                  </CardHeader>
+
+                  <CardContent>
+                    <h4 className="mb-4 text-sm font-medium uppercase tracking-wide text-md-on-surface-variant">
+                      Uploaded Documents
+                    </h4>
+                    {college.documents.length > 0 ? (
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        {college.documents.map((document) => (
+                          <div
+                            key={document.id}
+                            className="flex items-center justify-between gap-4 rounded-3xl border border-md-outline/10 bg-md-surface p-4"
+                          >
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-medium text-md-on-surface">
+                                {document.fileName || document.type.replace(/_/g, ' ')}
+                              </p>
+                              <p className="text-xs text-md-on-surface-variant">
+                                {document.type.replace(/_/g, ' ')}
+                              </p>
+                            </div>
+                            <div className="flex shrink-0 gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  setPreviewDocument({
+                                    id: document.id,
+                                    title: document.fileName || document.type.replace(/_/g, ' '),
+                                  })
+                                }
+                              >
+                                Preview
+                              </Button>
+                              <Button asChild variant="tonal" size="sm">
+                                <a href={`/api/admin/documents/${document.id}/download`}>Download</a>
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-rose-700">No documents uploaded.</p>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-4">
+              <Button
+                variant="outline"
+                onClick={() => setPage((current) => current - 1)}
+                disabled={page <= 1 || loading}
+              >
+                Previous
+              </Button>
+              <span className="text-sm text-md-on-surface-variant">
+                Page {page} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => setPage((current) => current + 1)}
+                disabled={page >= totalPages || loading}
+              >
+                Next
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </div>
   )
