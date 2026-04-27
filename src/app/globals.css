@@ -100,14 +100,18 @@
 .animate-stagger > * {
   animation: page-enter 0.4s cubic-bezier(0.2, 0, 0, 1) both;
 }
-.animate-stagger > *:nth-child(1) { animation-delay: 0ms; }
-.animate-stagger > *:nth-child(2) { animation-delay: 55ms; }
-.animate-stagger > *:nth-child(3) { animation-delay: 110ms; }
-.animate-stagger > *:nth-child(4) { animation-delay: 165ms; }
-.animate-stagger > *:nth-child(5) { animation-delay: 220ms; }
-.animate-stagger > *:nth-child(6) { animation-delay: 275ms; }
-.animate-stagger > *:nth-child(7) { animation-delay: 330ms; }
-.animate-stagger > *:nth-child(8) { animation-delay: 385ms; }
+.animate-stagger > *:nth-child(1)  { animation-delay: 0ms; }
+.animate-stagger > *:nth-child(2)  { animation-delay: 55ms; }
+.animate-stagger > *:nth-child(3)  { animation-delay: 110ms; }
+.animate-stagger > *:nth-child(4)  { animation-delay: 165ms; }
+.animate-stagger > *:nth-child(5)  { animation-delay: 220ms; }
+.animate-stagger > *:nth-child(6)  { animation-delay: 275ms; }
+.animate-stagger > *:nth-child(7)  { animation-delay: 330ms; }
+.animate-stagger > *:nth-child(8)  { animation-delay: 385ms; }
+.animate-stagger > *:nth-child(9)  { animation-delay: 440ms; }
+.animate-stagger > *:nth-child(10) { animation-delay: 495ms; }
+.animate-stagger > *:nth-child(11) { animation-delay: 550ms; }
+.animate-stagger > *:nth-child(12) { animation-delay: 605ms; }
 
 @keyframes slideUp {
   from {

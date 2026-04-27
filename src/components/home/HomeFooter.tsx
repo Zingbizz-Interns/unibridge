@@ -53,7 +53,7 @@ export default function HomeFooter() {
                 U
               </span>
               <span className="text-lg font-medium text-white">
-                UniBridge
+                Uni<span className="text-md-primary">Bridge</span>
               </span>
             </Link>
             <p className="text-sm text-white/45 leading-relaxed max-w-[220px]">

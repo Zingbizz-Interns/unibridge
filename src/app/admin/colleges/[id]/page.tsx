@@ -31,7 +31,7 @@ export default async function AdminCollegeDetailPage({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-page-enter">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-3">

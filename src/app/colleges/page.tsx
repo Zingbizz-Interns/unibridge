@@ -418,7 +418,7 @@ export default async function CollegesPage({ searchParams }: { searchParams: Pro
               <div className="mb-4 flex flex-wrap gap-1.5">
                 {selected.map((item) => (
                   <Link
-                    key={item.label}
+                    key={item.href}
                     href={item.href}
                     className="inline-flex items-center gap-1 rounded-full bg-md-secondary-container px-3 py-1 text-xs text-md-on-secondary-container transition-colors duration-200 hover:bg-md-secondary-container/80"
                   >

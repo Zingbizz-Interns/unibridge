@@ -25,7 +25,7 @@ export default async function ApplyPage({
 
   const [collegeData, studentData, existingApplication] = await Promise.all([
     db
-      .select({ name: colleges.name, id: colleges.id })
+      .select({ name: colleges.name, id: colleges.id, slug: colleges.slug })
       .from(colleges)
       .where(
         and(
@@ -64,7 +64,7 @@ export default async function ApplyPage({
 
   if (existingApplication.length > 0) {
     return (
-      <div className="container mx-auto max-w-3xl px-4 py-8">
+      <div className="container mx-auto max-w-3xl px-4 py-8 animate-page-enter">
         <div className="rounded-3xl border border-md-outline/10 bg-md-surface p-8 shadow-sm">
           <p className="text-sm font-medium uppercase tracking-wide text-md-primary">
             Application Already Submitted
@@ -96,7 +96,7 @@ export default async function ApplyPage({
 
   if (collegeCourses.length === 0) {
     return (
-      <div className="container mx-auto max-w-3xl px-4 py-8">
+      <div className="container mx-auto max-w-3xl px-4 py-8 animate-page-enter">
         <div className="rounded-3xl border border-md-outline/10 bg-md-surface p-8 shadow-sm">
           <p className="text-sm font-medium uppercase tracking-wide text-yellow-600">
             Applications Not Open
@@ -110,10 +110,10 @@ export default async function ApplyPage({
           </p>
           <div className="mt-6">
             <Link
-              href={`/colleges/${collegeId}`}
+              href={`/colleges/${college.slug}`}
               className="inline-flex items-center justify-center rounded-full border border-md-outline/20 bg-transparent px-6 py-2.5 text-sm font-medium text-md-primary transition-colors hover:bg-md-primary/10"
             >
-              Back to College
+              ← Back to College
             </Link>
           </div>
         </div>
@@ -122,7 +122,7 @@ export default async function ApplyPage({
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-4 py-8 max-w-4xl animate-page-enter">
       <h1 className="mb-8 text-3xl font-medium text-md-on-surface text-center">
         Application for {college.name}
       </h1>

@@ -153,7 +153,7 @@ export default async function ApplicationDetailPage({
       }>
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
+    <div className="mx-auto max-w-4xl px-4 py-8 animate-page-enter">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-medium text-md-on-surface">
           Application Details

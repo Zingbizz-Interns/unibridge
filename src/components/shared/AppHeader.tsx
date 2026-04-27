@@ -53,12 +53,14 @@ export default async function AppHeader() {
         {/* Brand */}
         <Link
           href="/"
-          className="flex items-center gap-2 text-xl font-medium text-md-primary transition-colors hover:text-md-primary/80"
+          className="flex items-center gap-2 text-xl font-medium transition-colors hover:opacity-80 group"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-md-primary text-md-on-primary text-sm font-bold shadow-sm">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-md-primary text-md-on-primary text-sm font-bold shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:scale-105 active:scale-95">
             U
           </span>
-          <span className="hidden sm:inline">UniBridge</span>
+          <span className="hidden sm:inline text-md-on-surface">
+            Uni<span className="text-md-primary">Bridge</span>
+          </span>
         </Link>
 
         {/* Navigation links */}

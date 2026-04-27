@@ -6,11 +6,13 @@ import ExploreProgramsSection from '@/components/home/ExploreProgramsSection'
 import TopStudyPlaces from '@/components/home/TopStudyPlaces'
 import ExploreCoursesSection from '@/components/home/ExploreCoursesSection'
 import HomeFooter from '@/components/home/HomeFooter'
+import { getCurrentUser } from '@/lib/session'
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser()
   return (
     <main className="min-h-screen bg-md-surface">
-      <HomeNav />
+      <HomeNav userName={user?.name ?? undefined} userRole={user?.role ?? undefined} />
       <HeroSection />
       <StatsBar />
       <StudyGoalSection />

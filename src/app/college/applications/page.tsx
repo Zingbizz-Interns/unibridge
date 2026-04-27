@@ -107,7 +107,7 @@ export default async function CollegeApplicationsPage({
   const rangeEnd = Math.min(currentPage * result.pageSize, result.total)
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 animate-page-enter">
       <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-sm font-medium uppercase tracking-[0.2em] text-md-primary">

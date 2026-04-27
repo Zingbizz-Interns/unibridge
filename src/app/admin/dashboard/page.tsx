@@ -39,7 +39,7 @@ export default async function AdminDashboardPage() {
   ])
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-page-enter">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <SectionHeading
           title="Platform Overview"

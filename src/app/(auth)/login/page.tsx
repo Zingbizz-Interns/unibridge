@@ -108,25 +108,24 @@ export default function LoginPage() {
         </CardContent>
 
         <CardFooter className="flex flex-col border-t border-md-outline/10 pt-6 mt-2">
-          <p className="text-center text-sm text-md-on-surface-variant mb-4">
-            Don&apos;t have an account? Choose how you want to register:
-            Student or College.
+          <p className="text-center text-sm font-medium text-md-on-surface mb-1">
+            New user?
           </p>
-          <div className="flex gap-4 w-full mb-4">
+          <p className="text-center text-sm text-md-on-surface-variant mb-4">
+            Sign in as a student or register your college below.
+          </p>
+          <div className="flex gap-4 w-full">
             <Button variant="outline" asChild className="flex-1">
               <Link href="/register/student">
-                Student
+                Sign in as Student
               </Link>
             </Button>
             <Button variant="tonal" asChild className="flex-1">
               <Link href="/register/college">
-                College
+                Register as College
               </Link>
             </Button>
           </div>
-          <p className="text-center text-xs text-md-on-surface-variant mt-2">
-            Administrators: Please sign in with your staff credentials.
-          </p>
         </CardFooter>
       </Card>
     </div>

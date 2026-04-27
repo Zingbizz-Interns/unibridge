@@ -1,36 +1,44 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { Search, ChevronDown, Bell, Menu, X, Cog, Briefcase, HeartPulse, BarChart2, Scale, Palette, PenTool, Leaf } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { signOut } from 'next-auth/react'
+import { Search, ChevronDown, Bell, Menu, X, Cog, Briefcase, HeartPulse, BarChart2, Scale, Palette, PenTool, Leaf, LogOut, LayoutDashboard } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
-const goals: { label: string; Icon: LucideIcon }[] = [
-  { label: 'Engineering', Icon: Cog },
-  { label: 'Management', Icon: Briefcase },
-  { label: 'Medical', Icon: HeartPulse },
-  { label: 'Commerce', Icon: BarChart2 },
-  { label: 'Law', Icon: Scale },
-  { label: 'Arts & Science', Icon: Palette },
-  { label: 'Design', Icon: PenTool },
-  { label: 'Agriculture', Icon: Leaf },
+const goals: { label: string; Icon: LucideIcon; href: string }[] = [
+  { label: 'Engineering', Icon: Cog, href: '/colleges?category=engineering' },
+  { label: 'Management', Icon: Briefcase, href: '/colleges?stream=Management' },
+  { label: 'Medical', Icon: HeartPulse, href: '/colleges?category=medical' },
+  { label: 'Commerce', Icon: BarChart2, href: '/colleges?stream=Commerce' },
+  { label: 'Law', Icon: Scale, href: '/colleges?stream=Law' },
+  { label: 'Arts & Science', Icon: Palette, href: '/colleges?category=arts_science' },
+  { label: 'Design', Icon: PenTool, href: '/colleges?stream=Design' },
+  { label: 'Agriculture', Icon: Leaf, href: '/colleges?stream=Agriculture' },
 ]
 
 const exploreMenu = [
   { label: 'Top Colleges', href: '/colleges' },
   { label: 'Compare Colleges', href: '/compare' },
-  { label: 'Exams', href: '#' },
-  { label: 'Scholarships', href: '#' },
+  { label: 'Exams', href: '/exams' },
   { label: 'News & Articles', href: '#' },
-  { label: 'College Predictor', href: '#' },
 ]
 
-export default function HomeNav() {
+const dashboardHref: Record<string, string> = {
+  student: '/dashboard',
+  college: '/college/dashboard',
+  admin: '/admin/dashboard',
+}
+
+export default function HomeNav({ userName, userRole }: { userName?: string; userRole?: string }) {
+  const router = useRouter()
   const [goalOpen, setGoalOpen] = useState(false)
   const [selectedGoal, setSelectedGoal] = useState('')
   const [exploreOpen, setExploreOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const goalRef = useRef<HTMLDivElement>(null)
   const exploreRef = useRef<HTMLDivElement>(null)
+  const userInitial = userName ? userName.trim()[0].toUpperCase() : 'G'
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -71,7 +79,7 @@ export default function HomeNav() {
                   {goals.map((g) => (
                     <button
                       key={g.label}
-                      onClick={() => { setSelectedGoal(g.label); setGoalOpen(false) }}
+                      onClick={() => { setSelectedGoal(g.label); setGoalOpen(false); router.push(g.href) }}
                       className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-md-on-surface hover:bg-md-primary/10 hover:text-md-primary transition-colors duration-150 active:scale-95"
                     >
                       <g.Icon className="h-4 w-4 shrink-0" />
@@ -141,7 +149,7 @@ export default function HomeNav() {
               aria-label="Profile menu"
             >
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-md-primary/15 text-md-primary text-xs font-semibold select-none">
-                G
+                {userInitial}
               </span>
               {mobileOpen
                 ? <X className="h-4 w-4 text-md-on-surface-variant" />
@@ -168,19 +176,42 @@ export default function HomeNav() {
       {mobileOpen && (
         <div className="border-t border-md-outline/10 bg-md-surface px-4 pb-5 z-40">
           <div className="pt-4 space-y-1">
-            <div className="flex items-center gap-3 rounded-2xl bg-md-surface-container px-4 py-3 mb-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-md-primary/15 text-md-primary font-semibold">G</span>
-              <div>
-                <p className="text-sm font-medium text-md-on-surface">Guest User</p>
-                <p className="text-xs text-md-on-surface-variant">Sign in to access all features</p>
-              </div>
-            </div>
-            <Link href="/login" onClick={() => setMobileOpen(false)} className="flex items-center rounded-2xl px-4 py-3 text-sm font-medium text-md-on-surface hover:bg-md-primary/10 hover:text-md-primary transition-colors">
-              Sign In
-            </Link>
-            <Link href="/register/student" onClick={() => setMobileOpen(false)} className="flex items-center rounded-2xl bg-md-primary px-4 py-3 text-sm font-medium text-md-on-primary hover:bg-md-primary/90 transition-colors">
-              Register as Student
-            </Link>
+            {userName ? (
+              <>
+                {/* Logged-in user profile row */}
+                <div className="flex items-center gap-3 rounded-2xl bg-md-primary/8 px-4 py-3 mb-1">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-md-primary/15 text-md-primary text-sm font-semibold select-none">
+                    {userInitial}
+                  </span>
+                  <span className="text-sm font-medium text-md-on-surface truncate">{userName}</span>
+                </div>
+                {userRole && dashboardHref[userRole] && (
+                  <Link
+                    href={dashboardHref[userRole]}
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-md-on-surface-variant hover:bg-md-primary/10 hover:text-md-primary transition-colors"
+                  >
+                    <LayoutDashboard className="h-4 w-4 shrink-0" />
+                    Dashboard
+                  </Link>
+                )}
+                <button
+                  onClick={() => { setMobileOpen(false); signOut({ callbackUrl: '/login' }) }}
+                  className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition-colors active:scale-95"
+                >
+                  <LogOut className="h-4 w-4 shrink-0" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center rounded-2xl bg-md-primary px-4 py-3 text-sm font-medium text-md-on-primary hover:bg-md-primary/90 transition-colors"
+              >
+                Login
+              </Link>
+            )}
             <div className="border-t border-md-outline/10 my-2 pt-1">
               <p className="px-4 py-1.5 text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">Explore</p>
               {exploreMenu.map(item => (

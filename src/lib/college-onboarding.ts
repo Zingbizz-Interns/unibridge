@@ -10,34 +10,12 @@ function hasText(value: string | null | undefined) {
 
 type CollegeProfileStatus = {
   name: string
-  category: string | null
   collegeType: string | null
-  type: string | null
-  city: string | null
-  state: string | null
-  pincode: string | null
-  affiliation: string | null
-  website: string | null
-  description: string | null
-  counsellorEmail: string | null
-  counsellorPhone: string | null
   verificationStatus: 'pending' | 'approved' | 'rejected' | 'suspended' | null
 }
 
 export function isCollegeProfileComplete(college: CollegeProfileStatus) {
-  return [
-    college.name,
-    college.category,
-    college.collegeType,
-    college.city,
-    college.state,
-    college.pincode,
-    college.affiliation,
-    college.website,
-    college.description,
-    college.counsellorEmail,
-    college.counsellorPhone,
-  ].every(hasText)
+  return hasText(college.name) && hasText(college.collegeType)
 }
 
 export function hasRequiredVerificationDocument(documentTypes: string[]) {
