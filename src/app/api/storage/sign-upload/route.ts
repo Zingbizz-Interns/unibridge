@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { storageAdmin, storageBuckets } from '@/lib/storage'
+import { getStoragePublicUrl } from '@/lib/storage-utils'
 import { z } from 'zod'
 
 const maxFileSizeBytes = 10 * 1024 * 1024
@@ -12,11 +13,19 @@ const signUploadSchema = z.object({
   contentType: z.string().trim().min(1, 'Content type is required'),
   size: z.number().int().positive().max(maxFileSizeBytes).optional(),
   bucket: z.enum(uploadBuckets).default('verification'),
+  folder: z.enum(['logos', 'banners']).optional(),
 })
 
-function isAllowedContentType(contentType: string, bucket: UploadBucketKey) {
+function isAllowedContentType(
+  contentType: string,
+  bucket: UploadBucketKey,
+  folder?: string
+) {
   switch (bucket) {
     case 'publicDocuments':
+      if (folder === 'logos' || folder === 'banners') {
+        return contentType.startsWith('image/')
+      }
       return contentType === 'application/pdf'
     case 'stories':
       return contentType.startsWith('image/')
@@ -40,13 +49,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { fileName, contentType, bucket } = signUploadSchema.parse(await req.json())
+    const { fileName, contentType, bucket, folder } = signUploadSchema.parse(await req.json())
 
-    if (!isAllowedContentType(contentType, bucket)) {
+    if (!isAllowedContentType(contentType, bucket, folder)) {
       const message =
-        bucket === 'publicDocuments'
+        bucket === 'publicDocuments' && !folder
           ? 'Invalid file type. Only PDFs are allowed.'
-          : bucket === 'stories'
+          : bucket === 'stories' || folder
             ? 'Invalid file type. Only images are allowed.'
             : 'Invalid file type. Only PDFs and images are allowed.'
       return NextResponse.json({ error: message }, { status: 400 })
@@ -55,7 +64,12 @@ export async function POST(req: Request) {
     const bucketName = storageBuckets[bucket]
     const fileExt = fileName.split('.').pop() || 'bin'
     const baseName = sanitizeFileName(fileName.replace(/\.[^.]+$/, '')) || 'upload'
-    const path = `${session.user.id}/${Date.now()}-${baseName}.${fileExt}`
+    const pathSegments = [
+      ...(folder ? [folder] : []),
+      session.user.id,
+      `${Date.now()}-${baseName}.${fileExt}`,
+    ]
+    const path = pathSegments.join('/')
 
     const { data, error } = await storageAdmin.storage
       .from(bucketName)
@@ -71,8 +85,8 @@ export async function POST(req: Request) {
       path,
       token: data.token,
       bucket: bucketName,
+      publicUrl: getStoragePublicUrl(bucketName, path),
     })
-
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
