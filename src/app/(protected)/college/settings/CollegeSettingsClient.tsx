@@ -1,7 +1,7 @@
 // src/app/(protected)/college/settings/CollegeSettingsClient.tsx
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -52,6 +52,8 @@ type Props = {
     latitude: number | null
     longitude: number | null
     verificationStatus: 'pending' | 'approved' | 'rejected' | 'suspended'
+    logoUrl: string | null
+    bannerUrl: string | null
   }
   documents: ExistingDoc[]
 }
@@ -110,6 +112,79 @@ export function CollegeSettingsClient({ college, documents: initialDocs }: Props
   })
 
   const isRejected = verificationStatus === 'rejected'
+
+  const MAX_IMAGE_SIZE = 5 * 1024 * 1024
+  const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+
+  const [logoUrl, setLogoUrl] = useState<string | null>(college.logoUrl)
+  const [bannerUrl, setBannerUrl] = useState<string | null>(college.bannerUrl)
+  const [logoUploading, setLogoUploading] = useState(false)
+  const [bannerUploading, setBannerUploading] = useState(false)
+  const [imageError, setImageError] = useState('')
+
+  const logoInputRef = useRef<HTMLInputElement>(null)
+  const bannerInputRef = useRef<HTMLInputElement>(null)
+
+  async function handleImageUpload(
+    file: File,
+    folder: 'logos' | 'banners',
+    field: 'logoUrl' | 'bannerUrl',
+    setUrl: (url: string) => void,
+    setUploading: (b: boolean) => void
+  ) {
+    setImageError('')
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setImageError('Only JPEG, PNG, and WebP images are allowed.')
+      return
+    }
+
+    if (file.size > MAX_IMAGE_SIZE) {
+      setImageError('Image must be under 5 MB.')
+      return
+    }
+
+    setUploading(true)
+    try {
+      const signRes = await fetch('/api/storage/sign-upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileName: file.name,
+          contentType: file.type,
+          size: file.size,
+          bucket: 'publicDocuments',
+          folder,
+        }),
+      })
+
+      const signData = await signRes.json()
+      if (!signRes.ok) throw new Error(signData.error ?? 'Failed to get upload URL')
+
+      const uploadRes = await fetch(signData.signedUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      })
+      if (!uploadRes.ok) throw new Error('Upload to storage failed')
+
+      const patchRes = await fetch('/api/college/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [field]: signData.publicUrl }),
+      })
+      if (!patchRes.ok) {
+        const patchData = await patchRes.json()
+        throw new Error(patchData.error ?? 'Failed to save image')
+      }
+
+      setUrl(signData.publicUrl as string)
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : 'Upload failed. Please try again.')
+    } finally {
+      setUploading(false)
+    }
+  }
 
   async function submitVerification() {
     const res = await fetch('/api/college/submit-verification', { method: 'POST' })
@@ -248,7 +323,123 @@ export function CollegeSettingsClient({ college, documents: initialDocs }: Props
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-8 px-4 py-12 sm:px-6">
+    <div className="mx-auto max-w-2xl space-y-8 px-4 py-12 sm:px-6 animate-page-enter">
+
+      {/* Profile Images */}
+      <Card elevation="elevated">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold text-primary">Profile Images</CardTitle>
+          <CardDescription>Upload your college logo and banner. JPEG, PNG, or WebP · max 5 MB each.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {imageError && (
+            <div className="mb-4 rounded-xl bg-errorContainer p-3 text-sm text-onErrorContainer">
+              {imageError}
+            </div>
+          )}
+
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
+            {/* Banner */}
+            <div className="flex-1">
+              <p className="mb-2 text-sm font-medium text-onSurface">Banner</p>
+              <div className="relative h-28 w-full overflow-hidden rounded-[16px]">
+                {bannerUrl ? (
+                  <img
+                    src={bannerUrl}
+                    alt="College banner"
+                    className="h-full w-full object-cover motion-safe:transition-opacity motion-safe:duration-300"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-gradient-to-br from-md-primary to-md-tertiary" />
+                )}
+                <button
+                  type="button"
+                  aria-label="Change banner image"
+                  onClick={() => bannerInputRef.current?.click()}
+                  disabled={bannerUploading}
+                  className="absolute bottom-2 right-2 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm motion-safe:transition-all motion-safe:duration-200 hover:bg-black/70 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {bannerUploading ? (
+                    <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                  ) : (
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  )}
+                </button>
+                <input
+                  ref={bannerInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  aria-label="Change banner image file"
+                  className="sr-only"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) handleImageUpload(file, 'banners', 'bannerUrl', setBannerUrl, setBannerUploading)
+                    e.target.value = ''
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Logo */}
+            <div className="flex flex-col items-start gap-2">
+              <p className="text-sm font-medium text-onSurface">Logo</p>
+              <div className="relative h-24 w-24">
+                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[20px] border border-outlineVariant bg-surfaceContainerLow shadow-sm">
+                  {logoUrl ? (
+                    <img
+                      src={logoUrl}
+                      alt="College logo"
+                      className="max-h-full max-w-full object-contain motion-safe:transition-opacity motion-safe:duration-300"
+                    />
+                  ) : (
+                    <span className="text-2xl font-bold text-onSurfaceVariant" aria-hidden="true">
+                      {college.name.charAt(0)}
+                    </span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  aria-label="Change logo"
+                  onClick={() => logoInputRef.current?.click()}
+                  disabled={logoUploading}
+                  className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-md-tertiary text-white shadow-md motion-safe:transition-all motion-safe:duration-200 hover:bg-md-tertiary/90 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-md-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {logoUploading ? (
+                    <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                  ) : (
+                    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  )}
+                </button>
+                <input
+                  ref={logoInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  aria-label="Change logo file"
+                  className="sr-only"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) handleImageUpload(file, 'logos', 'logoUrl', setLogoUrl, setLogoUploading)
+                    e.target.value = ''
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card elevation="elevated">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-primary">College Profile</CardTitle>
