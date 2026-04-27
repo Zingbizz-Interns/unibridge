@@ -55,6 +55,7 @@ export const colleges = pgTable(
     website: text('website'),
     description: text('description'),
     logoUrl: text('logo_url'),
+    bannerUrl: text('banner_url'),
     verificationStatus: verificationStatusEnum('verification_status').default(
       'pending'
     ),
