@@ -30,6 +30,8 @@ export default async function CollegeSettingsPage() {
       counsellorEmail: colleges.counsellorEmail,
       counsellorPhone: colleges.counsellorPhone,
       verificationStatus: colleges.verificationStatus,
+      logoUrl: colleges.logoUrl,
+      bannerUrl: colleges.bannerUrl,
       latitude: sql<number | null>`CASE WHEN ${colleges.location} IS NULL THEN NULL ELSE ST_Y(${colleges.location}) END`,
       longitude: sql<number | null>`CASE WHEN ${colleges.location} IS NULL THEN NULL ELSE ST_X(${colleges.location}) END`,
     })
