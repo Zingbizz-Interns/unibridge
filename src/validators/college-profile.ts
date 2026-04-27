@@ -142,6 +142,9 @@ export type CollegeProfileData = z.output<typeof collegeProfileSchema>
 export const collegeImageSchema = z.object({
   logoUrl: z.string().url('Must be a valid URL').nullable().optional(),
   bannerUrl: z.string().url('Must be a valid URL').nullable().optional(),
-})
+}).refine(
+  (data) => data.logoUrl !== undefined || data.bannerUrl !== undefined,
+  { message: 'At least one image field (logoUrl or bannerUrl) must be provided' }
+)
 
 export type CollegeImageData = z.infer<typeof collegeImageSchema>
