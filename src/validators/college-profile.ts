@@ -138,3 +138,10 @@ export const collegeProfileSchema = z
 
 export type CollegeProfileInput = z.input<typeof collegeProfileSchema>
 export type CollegeProfileData = z.output<typeof collegeProfileSchema>
+
+export const collegeImageSchema = z.object({
+  logoUrl: z.string().url('Must be a valid URL').nullable().optional(),
+  bannerUrl: z.string().url('Must be a valid URL').nullable().optional(),
+})
+
+export type CollegeImageData = z.infer<typeof collegeImageSchema>

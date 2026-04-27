@@ -1,11 +1,10 @@
-// src/app/api/college/profile/route.ts
 import { NextResponse } from 'next/server'
 import { eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
 import { colleges } from '@/db/schema'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { collegeProfileSchema } from '@/validators/college-profile'
+import { collegeProfileSchema, collegeImageSchema } from '@/validators/college-profile'
 
 export async function PATCH(req: Request) {
   try {
@@ -14,7 +13,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const data = collegeProfileSchema.parse(await req.json())
+    const body = await req.json()
 
     const college = await db.query.colleges.findFirst({
       where: eq(colleges.userId, session.user.id),
@@ -24,6 +23,22 @@ export async function PATCH(req: Request) {
     if (!college) {
       return NextResponse.json({ error: 'College profile not found' }, { status: 404 })
     }
+
+    // Image-only update: body has no `name` field
+    if (!('name' in body)) {
+      const { logoUrl, bannerUrl } = collegeImageSchema.parse(body)
+      await db
+        .update(colleges)
+        .set({
+          ...(logoUrl !== undefined && { logoUrl: logoUrl ?? null }),
+          ...(bannerUrl !== undefined && { bannerUrl: bannerUrl ?? null }),
+        })
+        .where(eq(colleges.id, college.id))
+      return NextResponse.json({ success: true })
+    }
+
+    // Full profile update
+    const data = collegeProfileSchema.parse(body)
 
     await db
       .update(colleges)
@@ -56,7 +71,10 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ success: true })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.issues[0]?.message ?? 'Invalid input' }, { status: 400 })
+      return NextResponse.json(
+        { error: error.issues[0]?.message ?? 'Invalid input' },
+        { status: 400 }
+      )
     }
 
     console.error('College profile update error:', error)
