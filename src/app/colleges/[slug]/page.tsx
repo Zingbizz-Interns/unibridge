@@ -21,6 +21,7 @@ import { getStorageReadableUrl } from '@/lib/storage-utils'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { CollegeHeroCard } from '@/components/college/CollegeHeroCard'
 
 function formatCurrency(value: string | null) {
   if (!value) return null
@@ -63,7 +64,31 @@ function normalizeWebsite(website: string | null) {
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const c = await db.query.colleges.findFirst({
-    where: eq(colleges.slug, slug)
+    where: eq(colleges.slug, slug),
+    columns: {
+      id: true,
+      userId: true,
+      name: true,
+      slug: true,
+      city: true,
+      state: true,
+      category: true,
+      collegeType: true,
+      type: true,
+      nirfRank: true,
+      naacGrade: true,
+      engineeringCutoff: true,
+      medicalCutoff: true,
+      affiliation: true,
+      website: true,
+      description: true,
+      logoUrl: true,
+      bannerUrl: true,
+      verificationStatus: true,
+      counsellorName: true,
+      counsellorEmail: true,
+      counsellorPhone: true,
+    },
   })
 
   if (!c || c.verificationStatus !== 'approved') {
@@ -71,6 +96,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   }
 
   const user = await getCurrentUser()
+  const isAdmin = user?.role === 'college' && user.id === c.userId
   let isShortlisted = false
   let existingApplicationId: string | null = null
   let studentPhone: string | null = null
@@ -144,24 +170,17 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   )
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-page-enter">
       <ClientAnalyticsTracker collegeId={c.id} eventType="view_college" />
 
       {/* Hero card */}
       <Card className="overflow-hidden mb-8">
-        <div className="bg-gradient-to-br from-md-primary to-md-tertiary h-32 md:h-48 relative">
-          <div className="absolute inset-0 bg-md-primary/20 blur-3xl" aria-hidden="true" />
-        </div>
-        <div className="px-6 pb-6 relative">
-          <div className="h-24 w-24 md:h-32 md:w-32 bg-md-surface rounded-3xl shadow-md border border-md-outline/10 flex items-center justify-center p-2 absolute -top-12 md:-top-16">
-            {c.logoUrl ? (
-              <img src={c.logoUrl} alt={c.name} className="max-h-full max-w-full object-contain" />
-            ) : (
-              <div className="text-md-on-surface-variant font-bold text-3xl">{c.name.charAt(0)}</div>
-            )}
-          </div>
-
-          <div className="mt-16 md:mt-20 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+        <CollegeHeroCard
+          college={{ name: c.name, logoUrl: c.logoUrl ?? null, bannerUrl: c.bannerUrl ?? null }}
+          isAdmin={isAdmin}
+        />
+        <div className="px-6 pb-6 pt-16 md:pt-20">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
             <div>
               <h1 className="text-2xl md:text-3xl font-medium text-md-on-surface">{c.name}</h1>
               <p className="text-md-on-surface-variant mt-1 flex items-center gap-2">
