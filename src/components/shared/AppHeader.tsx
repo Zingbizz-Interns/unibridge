@@ -55,12 +55,7 @@ export default async function AppHeader() {
           href="/"
           className="flex items-center gap-2 text-xl font-medium transition-colors hover:opacity-80 group"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-md-primary text-md-on-primary text-sm font-bold shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:scale-105 active:scale-95">
-            U
-          </span>
-          <span className="hidden sm:inline text-md-on-surface">
-            Uni<span className="text-md-primary">Bridge</span>
-          </span>
+          <img src="/logo.svg" alt="Pick Your Dream" className="h-7 w-auto" />
         </Link>
 
         {/* Navigation links */}

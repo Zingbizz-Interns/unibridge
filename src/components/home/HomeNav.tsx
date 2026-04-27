@@ -55,13 +55,8 @@ export default function HomeNav({ userName, userRole }: { userName?: string; use
         <div className="flex h-16 items-center gap-3">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-md-primary text-md-on-primary text-sm font-bold shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:scale-105 active:scale-95">
-              U
-            </span>
-            <span className="hidden sm:block text-lg font-medium text-md-on-surface">
-              Uni<span className="text-md-primary">Bridge</span>
-            </span>
+          <Link href="/" className="shrink-0 group hover:opacity-80 transition-opacity duration-200">
+            <img src="/logo.svg" alt="Pick Your Dream" className="h-7 w-auto" />
           </Link>
 
           {/* Select Goal Dropdown */}

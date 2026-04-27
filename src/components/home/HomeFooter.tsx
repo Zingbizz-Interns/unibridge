@@ -49,13 +49,8 @@ export default function HomeFooter() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-10 mb-10">
           {/* Brand column */}
           <div className="col-span-2 sm:col-span-1">
-            <Link href="/" className="flex items-center gap-2.5 mb-4">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-md-primary text-md-on-primary text-sm font-bold">
-                U
-              </span>
-              <span className="text-lg font-medium text-white">
-                Uni<span className="text-md-primary">Bridge</span>
-              </span>
+            <Link href="/" className="inline-block mb-4 hover:opacity-80 transition-opacity duration-200">
+              <img src="/logo.svg" alt="Pick Your Dream" className="h-7 w-auto brightness-0 invert" />
             </Link>
             <p className="text-sm text-white/45 leading-relaxed max-w-[220px]">
               India&apos;s college discovery &amp; admission platform. Explore, compare, and apply.
