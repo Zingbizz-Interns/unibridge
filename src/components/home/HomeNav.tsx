@@ -21,7 +21,7 @@ const exploreMenu = [
   { label: 'Top Colleges', href: '/colleges' },
   { label: 'Compare Colleges', href: '/compare' },
   { label: 'Exams', href: '/exams' },
-  { label: 'News & Articles', href: '#' },
+  { label: 'News & Articles', href: '/news' },
 ]
 
 const dashboardHref: Record<string, string> = {
