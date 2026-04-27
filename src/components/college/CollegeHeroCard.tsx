@@ -1,9 +1,12 @@
 'use client'
 
 import { useRef, useState } from 'react'
-
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+import {
+  COLLEGE_IMAGE_MAX_SIZE,
+  COLLEGE_IMAGE_ALLOWED_TYPES,
+  uploadCollegeImage,
+  saveCollegeImageUrl,
+} from '@/lib/college-image-upload'
 
 type Props = {
   college: {
@@ -11,51 +14,7 @@ type Props = {
     logoUrl: string | null
     bannerUrl: string | null
   }
-  isAdmin: boolean
-}
-
-async function uploadCollegeImage(file: File, folder: 'logos' | 'banners'): Promise<string> {
-  const signRes = await fetch('/api/storage/sign-upload', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      fileName: file.name,
-      contentType: file.type,
-      size: file.size,
-      bucket: 'publicDocuments',
-      folder,
-    }),
-  })
-
-  if (!signRes.ok) {
-    const { error } = await signRes.json()
-    throw new Error(error ?? 'Failed to get upload URL')
-  }
-
-  const { signedUrl, publicUrl } = await signRes.json()
-
-  const uploadRes = await fetch(signedUrl, {
-    method: 'PUT',
-    headers: { 'Content-Type': file.type },
-    body: file,
-  })
-
-  if (!uploadRes.ok) throw new Error('Upload to storage failed')
-
-  return publicUrl as string
-}
-
-async function saveImageUrl(field: 'logoUrl' | 'bannerUrl', url: string): Promise<void> {
-  const res = await fetch('/api/college/profile', {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ [field]: url }),
-  })
-
-  if (!res.ok) {
-    const { error } = await res.json()
-    throw new Error(error ?? 'Failed to save image URL')
-  }
+  isCollegeOwner: boolean
 }
 
 function CameraIcon({ className }: { className?: string }) {
@@ -87,7 +46,7 @@ function Spinner({ className }: { className?: string }) {
   )
 }
 
-export function CollegeHeroCard({ college, isAdmin }: Props) {
+export function CollegeHeroCard({ college, isCollegeOwner }: Props) {
   const [logoUrl, setLogoUrl] = useState(college.logoUrl)
   const [bannerUrl, setBannerUrl] = useState(college.bannerUrl)
   const [logoLoading, setLogoLoading] = useState(false)
@@ -106,12 +65,12 @@ export function CollegeHeroCard({ college, isAdmin }: Props) {
   ) {
     setError(null)
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    if (!COLLEGE_IMAGE_ALLOWED_TYPES.includes(file.type)) {
       setError('Only JPEG, PNG, and WebP images are allowed.')
       return
     }
 
-    if (file.size > MAX_IMAGE_SIZE) {
+    if (file.size > COLLEGE_IMAGE_MAX_SIZE) {
       setError('Image must be under 5 MB.')
       return
     }
@@ -119,7 +78,7 @@ export function CollegeHeroCard({ college, isAdmin }: Props) {
     setLoading(true)
     try {
       const publicUrl = await uploadCollegeImage(file, folder)
-      await saveImageUrl(field, publicUrl)
+      await saveCollegeImageUrl(field, publicUrl)
       setUrl(publicUrl)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed. Please try again.')
@@ -148,7 +107,7 @@ export function CollegeHeroCard({ college, isAdmin }: Props) {
           </div>
         )}
 
-        {isAdmin && (
+        {isCollegeOwner && (
           <>
             <button
               type="button"
@@ -193,7 +152,7 @@ export function CollegeHeroCard({ college, isAdmin }: Props) {
               )}
             </div>
 
-            {isAdmin && (
+            {isCollegeOwner && (
               <>
                 <button
                   type="button"

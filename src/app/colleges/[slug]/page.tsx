@@ -96,7 +96,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   }
 
   const user = await getCurrentUser()
-  const isAdmin = user?.role === 'college' && user.id === c.userId
+  const isCollegeOwner = user?.role === 'college' && user.id === c.userId
   let isShortlisted = false
   let existingApplicationId: string | null = null
   let studentPhone: string | null = null
@@ -177,7 +177,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       <Card className="overflow-hidden mb-8">
         <CollegeHeroCard
           college={{ name: c.name, logoUrl: c.logoUrl ?? null, bannerUrl: c.bannerUrl ?? null }}
-          isAdmin={isAdmin}
+          isCollegeOwner={isCollegeOwner}
         />
         <div className="px-6 pb-6 pt-16 md:pt-20">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">

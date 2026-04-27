@@ -19,6 +19,12 @@ import {
   INDIAN_STATES,
   NAAC_GRADES,
 } from '@/validators/college-profile'
+import {
+  COLLEGE_IMAGE_MAX_SIZE,
+  COLLEGE_IMAGE_ALLOWED_TYPES,
+  uploadCollegeImage,
+  saveCollegeImageUrl,
+} from '@/lib/college-image-upload'
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
 
@@ -113,9 +119,6 @@ export function CollegeSettingsClient({ college, documents: initialDocs }: Props
 
   const isRejected = verificationStatus === 'rejected'
 
-  const MAX_IMAGE_SIZE = 5 * 1024 * 1024
-  const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
-
   const [logoUrl, setLogoUrl] = useState<string | null>(college.logoUrl)
   const [bannerUrl, setBannerUrl] = useState<string | null>(college.bannerUrl)
   const [logoUploading, setLogoUploading] = useState(false)
@@ -134,51 +137,21 @@ export function CollegeSettingsClient({ college, documents: initialDocs }: Props
   ) {
     setImageError('')
 
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    if (!COLLEGE_IMAGE_ALLOWED_TYPES.includes(file.type)) {
       setImageError('Only JPEG, PNG, and WebP images are allowed.')
       return
     }
 
-    if (file.size > MAX_IMAGE_SIZE) {
+    if (file.size > COLLEGE_IMAGE_MAX_SIZE) {
       setImageError('Image must be under 5 MB.')
       return
     }
 
     setUploading(true)
     try {
-      const signRes = await fetch('/api/storage/sign-upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fileName: file.name,
-          contentType: file.type,
-          size: file.size,
-          bucket: 'publicDocuments',
-          folder,
-        }),
-      })
-
-      const signData = await signRes.json()
-      if (!signRes.ok) throw new Error(signData.error ?? 'Failed to get upload URL')
-
-      const uploadRes = await fetch(signData.signedUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': file.type },
-        body: file,
-      })
-      if (!uploadRes.ok) throw new Error('Upload to storage failed')
-
-      const patchRes = await fetch('/api/college/profile', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ [field]: signData.publicUrl }),
-      })
-      if (!patchRes.ok) {
-        const patchData = await patchRes.json()
-        throw new Error(patchData.error ?? 'Failed to save image')
-      }
-
-      setUrl(signData.publicUrl as string)
+      const publicUrl = await uploadCollegeImage(file, folder)
+      await saveCollegeImageUrl(field, publicUrl)
+      setUrl(publicUrl)
     } catch (err) {
       setImageError(err instanceof Error ? err.message : 'Upload failed. Please try again.')
     } finally {
